@@ -29,7 +29,7 @@ project.ext.set("pomProjectDescription", "Spring Integration For VMware GemFire"
 dependencies {
     api(platform("org.springframework.integration:spring-integration-bom:$springIntegrationBom"))
     api "org.springframework.integration:spring-integration-core"
-    api("com.vmware.gemfire:spring-data-2.7-gemfire-10.0:$springDataGemfire") {
+    api("com.vmware.gemfire:spring-data-2.7-gemfire-9.15:$springDataGemfire") {
         exclude group: "org.springframework"
         exclude module: "shiro-event"
         exclude module: "shiro-lang"
@@ -41,18 +41,18 @@ dependencies {
         exclude module: "commons-logging"
     }
     api "commons-io:commons-io:$commonsIO"
-    compileOnly("com.vmware.gemfire:gemfire-core:$gemfireVersion") {
+    compileOnly("com.vmware.gemfire:geode-core:$gemfireVersion") {
         exclude module: "commons-logging"
     }
-    compileOnly("com.vmware.gemfire:gemfire-cq:$gemfireVersion")
+    compileOnly("com.vmware.gemfire:geode-cq:$gemfireVersion")
 
     testImplementation(platform("org.junit:junit-bom:$junitBom"))
     testImplementation "org.springframework.integration:spring-integration-test-support"
 
-    testImplementation("com.vmware.gemfire:gemfire-core:$gemfireVersion") {
+    testImplementation("com.vmware.gemfire:geode-core:$gemfireVersion") {
         exclude module: "commons-logging"
     }
-    testImplementation("com.vmware.gemfire:gemfire-cq:$gemfireVersion")
+    testImplementation("com.vmware.gemfire:geode-cq:$gemfireVersion")
 
     testImplementation "junit:junit"
     testImplementation "org.assertj:assertj-core:$assertJCore"
