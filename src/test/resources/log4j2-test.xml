@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) VMware, Inc. 2023. All rights reserved.
+  ~ SPDX-License-Identifier: Apache-2.0
+  -->
+
 <Configuration status="WARN">
 	<Appenders>
 		<Console name="STDOUT" target="SYSTEM_OUT">
