@@ -1,73 +1,39 @@
-[[gemfire]]
-== VMware Tanzu GemFire and Apache Geode Support
+## Spring Integration for VMware GemFire
 
-IMPORTANT: Starting with Spring Data 2022.0.0 there is not going to be VMware Tanzu GemFire or Apache Geode out-of-the-box.
-This module is present here only as a source code for legacy.
-
-Spring Integration provides support for VMware Tanzu GemFire and Apache Geode.
+Spring Integration provides support for VMware GemFire.
 
 You need to include this dependency into your project:
 
-====
-[source, xml, subs="normal", role="primary"]
-.Maven
-----
+
+**Maven**
+```xml
 <dependency>
     <groupId>org.springframework.integration</groupId>
     <artifactId>spring-integration-gemfire</artifactId>
     <version>{project-version}</version>
 </dependency>
-----
-[source, groovy, subs="normal", role="secondary"]
-.Gradle
-----
+```
+
+**Gradle**
+```groovy
 compile "org.springframework.integration:spring-integration-gemfire:{project-version}"
-----
-====
+```
 
 GemFire is a distributed data management platform that provides a key-value data grid along with advanced distributed system features, such as event processing, continuous querying, and remote function execution.
-This guide assumes some familiarity with the commercial https://tanzu.vmware.com/gemfire[VMware Tanzu GemFire] or Open Source https://geode.apache.org[Apache Geode].
+This guide assumes some familiarity with the commercial [VMware GemFire](https://www.vmware.com/products/gemfire.html).
 
-Spring integration provides support for GemFire by implementing inbound adapters for entry and continuous query events, an outbound adapter to write entries to the cache, and message and metadata stores and `GemfireLockRegistry` implementations.
-Spring integration leverages the https://projects.spring.io/spring-data-gemfire[Spring Data for VMware Tanzu GemFire] project, providing a thin wrapper over its components.
-
-Starting with version 5.1, the Spring Integration GemFire module uses the https://github.com/spring-projects/spring-data-geode[Spring Data for Apache Geode] transitive dependency by default.
-To switch to the commercial VMware Tanzu GemFire-based Spring Data for VMware Tanzu GemFire, exclude `spring-data-geode` from dependencies and add `spring-data-gemfire`, as the following Maven snippet shows:
-
-====
-[source,xml]
-----
-<dependency>
-    <groupId>org.springframework.integration</groupId>
-    <artifactId>spring-integration-gemfire</artifactId>
-    <exclusions>
-        <exclusion>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-geode</artifactId>
-        </exclusion>
-    </exclusions>
-</dependency>
-
-<dependency>
-    <groupId>org.springframework.data</groupId>
-    <artifactId>spring-data-gemfire</artifactId>
-</dependency>
-----
-====
+Spring Integration provides support for GemFire by implementing inbound adapters for entry and continuous query events, an outbound adapter to write entries to the cache, and message and metadata stores and `GemfireLockRegistry` implementations.
+Spring integration leverages the [Spring Data for VMware GemFire](https://docs.vmware.com/en/Spring-Data-for-VMware-GemFire/index.html) project, providing a thin wrapper over its components.
 
 To configure the 'int-gfe' namespace, include the following elements within the headers of your XML configuration file:
 
-====
-[source,xml]
-----
+```xml
 xmlns:int-gfe="http://www.springframework.org/schema/integration/gemfire"
 xsi:schemaLocation="http://www.springframework.org/schema/integration/gemfire
-	https://www.springframework.org/schema/integration/gemfire/spring-integration-gemfire.xsd"
-----
-====
+https://www.springframework.org/schema/integration/gemfire/spring-integration-gemfire.xsd"
+```
 
-[[gemfire-inbound]]
-=== Inbound Channel Adapter
+### <a id="gemfire-inbound"></a>Inbound Channel Adapter
 
 The inbound channel adapter produces messages on a channel when triggered by a GemFire `EntryEvent`.
 GemFire generates events whenever an entry is `CREATED`, `UPDATED`, `DESTROYED`, or `INVALIDATED` in the associated region.
@@ -76,15 +42,12 @@ For example, you may want to produce messages only in response to an entry being
 In addition, the inbound channel adapter can evaluate a SpEL expression if, for example, you want your message payload to contain an event property such as the new entry value.
 The following example shows how to configure an inbound channel adapter with a SpEL language (in the `expression` attribute):
 
-====
-[source,xml]
-----
+```xml
 <gfe:cache/>
 <gfe:replicated-region id="region"/>
 <int-gfe:inbound-channel-adapter id="inputChannel" region="region"
-    cache-events="CREATED" expression="newValue"/>
-----
-====
+cache-events="CREATED" expression="newValue"/>
+```
 
 The preceding configuration creates a GemFire `Cache` and `Region` by using Spring GemFire's 'gfe' namespace.
 The `inbound-channel-adapter` element requires a reference to the GemFire region on which the adapter listens for events.
@@ -92,53 +55,46 @@ Optional attributes include `cache-events`, which can contain a comma-separated 
 By default, `CREATED` and `UPDATED` are enabled.
 If no `channel` attribute is provided, the channel is created from the `id` attribute.
 This adapter also supports an `error-channel`.
-The GemFire https://geode.apache.org/releases/latest/javadoc/org/apache/geode/cache/EntryEvent.html[`EntryEvent`] is the `#root` object of the `expression` evaluation.
+The GemFire [`EntryEvent`](https://geode.apache.org/releases/latest/javadoc/org/apache/geode/cache/EntryEvent.html) is the `#root` object of the `expression` evaluation.
 The following example shows an expression that replaces a value for a key:
 
-====
-[source]
-----
+```
 expression="new something.MyEvent(key, oldValue, newValue)"
-----
-====
+```
 
 If the `expression` attribute is not provided, the message payload is the GemFire `EntryEvent` itself.
 
 NOTE: This adapter conforms to Spring Integration conventions.
 
-[[gemfire-cq]]
-=== Continuous Query Inbound Channel Adapter
+### <a id="gemfire-cq"></a>Continuous Query Inbound Channel Adapter
 
 The continuous query inbound channel adapter produces messages on a channel when triggered by a GemFire continuous query or `CqEvent` event.
-In release `1.1`, Spring Data introduced continuous query support, including `ContinuousQueryListenerContainer`, which provides a nice abstraction over the GemFire native API.
+Spring Data introduced continuous query support, including `ContinuousQueryListenerContainer`, which provides a nice abstraction over the GemFire native API.
 This adapter requires a reference to a `ContinuousQueryListenerContainer` instance, creates a listener for a given `query`, and executes the query.
 The continuous query acts as an event source that fires whenever its result set changes state.
 
 NOTE: GemFire queries are written in OQL and are scoped to the entire cache (not just one region).
 Additionally, continuous queries require a remote (that is, running in a separate process or remote host) cache server.
-See the https://gemfire82.docs.VMware Tanzu.io/docs-gemfire/gemfire_nativeclient/continuous-querying/continuous-querying.html[GemFire documentation] for more information on implementing continuous queries.
+See the [GemFire Continuous Queries](https://docs.vmware.com/en/VMware-GemFire/10.0/gf/developing-continuous_querying-chapter_overview.html) for more information on implementing continuous queries.
 
 The following configuration creates a GemFire client cache (recall that a remote cache server is required for this implementation and its address is configured as a child element of the pool), a client region, and a `ContinuousQueryListenerContainer` that uses Spring Data:
 
-====
-[source,xml]
-----
+```xml
 <gfe:client-cache id="client-cache" pool-name="client-pool"/>
 
 <gfe:pool id="client-pool" subscription-enabled="true" >
-    <!--configure server or locator here required to address the cache server -->
+<!--configure server or locator here required to address the cache server -->
 </gfe:pool>
 
 <gfe:client-region id="test" cache-ref="client-cache" pool-name="client-pool"/>
 
 <gfe:cq-listener-container id="queryListenerContainer" cache="client-cache"
-    pool-name="client-pool"/>
+pool-name="client-pool"/>
 
 <int-gfe:cq-inbound-channel-adapter id="inputChannel"
-    cq-listener-container="queryListenerContainer"
-    query="select * from /test"/>
-----
-====
+cq-listener-container="queryListenerContainer"
+query="select * from /test"/>
+```
 
 The continuous query inbound channel adapter requires a `cq-listener-container` attribute, which must contain a reference to the `ContinuousQueryListenerContainer`.
 Optionally, it accepts an `expression` attribute that uses SpEL to transform the `CqEvent` or extract an individual property as needed.
@@ -151,35 +107,28 @@ This adapter also supports an `error-channel`.
 
 NOTE: This adapter conforms to Spring Integration conventions.
 
-[[gemfire-outbound]]
-=== Outbound Channel Adapter
+### <a id="gemfire-outbound"></a> Outbound Channel Adapter
 
 The outbound channel adapter writes cache entries that are mapped from the message payload.
 In its simplest form, it expects a payload of type `java.util.Map` and puts the map entries into its configured region.
 The following example shows how to configure an outbound channel adapter:
 
-====
-[source,xml]
-----
+```xml
 <int-gfe:outbound-channel-adapter id="cacheChannel" region="region"/>
-----
-====
+```
 
 Given the preceding configuration, an exception is thrown if the payload is not a `Map`.
 Additionally, you can configure the outbound channel adapter to create a map of cache entries by using SpEL.
 The following example shows how to do so:
 
-====
-[source,xml]
-----
+```xml
 <int-gfe:outbound-channel-adapter id="cacheChannel" region="region">
     <int-gfe:cache-entries>
         <entry key="payload.toUpperCase()" value="payload.toLowerCase()"/>
         <entry key="'thing1'" value="'thing2'"/>
     </int-gfe:cache-entries>
 </int-gfe:outbound-channel-adapter>
-----
-====
+```
 
 In the preceding configuration, the inner element (`cache-entries`) is semantically equivalent to a Spring 'map' element.
 The adapter interprets the `key` and `value` attributes as SpEL expressions with the message as the evaluation context.
@@ -187,20 +136,17 @@ Note that this can contain arbitrary cache entries (not only those derived from 
 In the preceding example, if the message sent to `cacheChannel` has a `String` payload with a value `Hello`, two entries (`[HELLO:hello, thing1:thing2]`) are written (either created or updated) in the cache region.
 This adapter also supports the `order` attribute, which may be useful if it is bound to a `PublishSubscribeChannel`.
 
-[[gemfire-message-store]]
-=== Gemfire Message Store
+### <a id="gemfire-message-store"></a> Gemfire Message Store
 
-As described in EIP, a https://www.enterpriseintegrationpatterns.com/MessageStore.html[message store] lets you persist messages.
+As described in EIP, a [message store](https://www.enterpriseintegrationpatterns.com/MessageStore.html) lets you persist messages.
 This can be useful when dealing with components that have a capability to buffer messages (`QueueChannel`, `Aggregator`, `Resequencer`, and others) if reliability is a concern.
-In Spring Integration, the `MessageStore` strategy interface also provides the foundation for the https://www.enterpriseintegrationpatterns.com/StoreInLibrary.html[claim check] pattern, which is described in EIP as well.
+In Spring Integration, the `MessageStore` strategy interface also provides the foundation for the [claim check](https://www.enterpriseintegrationpatterns.com/StoreInLibrary.html) pattern, which is described in EIP as well.
 
 Spring Integration's Gemfire module provides `GemfireMessageStore`, which is an implementation of both the `MessageStore` strategy (mainly used by the `QueueChannel` and `ClaimCheck` patterns) and the `MessageGroupStore` strategy (mainly used by the `Aggregator` and `Resequencer` patterns).
 
 The following example configures the cache and region by using the `spring-gemfire` namespace (not to be confused with the `spring-integration-gemfire` namespace):
 
-====
-[source,xml]
-----
+```xml
 <bean id="gemfireMessageStore" class="o.s.i.gemfire.store.GemfireMessageStore">
     <constructor-arg ref="myRegion"/>
 </bean>
@@ -215,19 +161,16 @@ The following example configures the cache and region by using the `spring-gemfi
 <int:channel>
 
 <int:aggregator input-channel="inputChannel" output-channel="outputChannel"
-    message-store="gemfireMessageStore"/>
-----
-====
+message-store="gemfireMessageStore"/>
+```
 
 Often, it is desirable for the message store to be maintained in one or more remote cache servers in a client-server configuration.
 In this case, you should configure a client cache, a client region, and a client pool and inject the region into the `MessageStore`.
 The following example shows how to do so:
 
-====
-[source,xml]
-----
+```xml
 <bean id="gemfireMessageStore"
-    class="org.springframework.integration.gemfire.store.GemfireMessageStore">
+class="org.springframework.integration.gemfire.store.GemfireMessageStore">
     <constructor-arg ref="myRegion"/>
 </bean>
 
@@ -238,8 +181,7 @@ The following example shows how to do so:
 <gfe:pool id="messageStorePool">
     <gfe:server host="localhost" port="40404" />
 </gfe:pool>
-----
-====
+```
 
 Note that the `pool` element is configured with the address of a cache server (you can substitute a locator here).
 The region is configured as a 'PROXY' so that no data is stored locally.
@@ -247,8 +189,7 @@ The region's `id` corresponds to a region with the same name in the cache server
 
 Starting with version 4.3.12, the `GemfireMessageStore` supports the key `prefix` option to allow distinguishing between instances of the store on the same GemFire region.
 
-[[gemfire-lock-registry]]
-=== Gemfire Lock Registry
+### <a id="gemfire-lock-registry"></a> Gemfire Lock Registry
 
 Starting with version 4.0, the `GemfireLockRegistry` is available.
 Certain components (for example, the aggregator and the resequencer) use a lock obtained from a `LockRegistry` instance to ensure that only one thread is manipulating a group at any given time.
@@ -261,17 +202,16 @@ It is used to obtain a `Lock` from the `getDistributedLock()` method.
 This operation requires `GLOBAL` scope for the `Region`.
 Another constructor requires a `Cache`, and the `Region` is created with `GLOBAL` scope and with the name, `LockRegistry`.
 
-[[gemfire-metadata-store]]
-=== Gemfire Metadata Store
+### <a id="gemfire-metadata-store"></a> Gemfire Metadata Store
 
-Version 4.0 introduced a new Gemfire-based `MetadataStore` (<<./meta-data-store.adoc#metadata-store,Metadata Store>>) implementation.
+Version 4.0 introduced a new Gemfire-based [`MetadataStore`](https://docs.spring.io/spring-integration/reference/meta-data-store.html) implementation.
 You can use the `GemfireMetadataStore` to maintain metadata state across application restarts.
 This new `MetadataStore` implementation can be used with adapters such as:
 
-* <<./feed.adoc#feed-inbound-channel-adapter,Feed Inbound Channel Adapter>>
-* <<./file.adoc#file-reading,Reading Files>>
-* <<./ftp.adoc#ftp-inbound,FTP Inbound Channel Adapter>>
-* <<./sftp.adoc#sftp-inbound,SFTP Inbound Channel Adapter>>
+* [Feed Inbound Channel Adapter](https://docs.spring.io/spring-integration/reference/feed.html#feed-inbound-channel-adapter)
+* [Reading Files](https://docs.spring.io/spring-integration/reference/file/reading.html)
+* [FTP Inbound Channel Adapter](https://docs.spring.io/spring-integration/reference/ftp/inbound.html)
+* [SFTP Inbound Channel Adapter](https://docs.spring.io/spring-integration/reference/sftp/inbound.html)
 
 To get these adapters to use the new `GemfireMetadataStore`, declare a Spring bean with a bean name of `metadataStore`.
 The feed inbound channel adapter automatically picks up and use the declared `GemfireMetadataStore`.
@@ -282,9 +222,7 @@ They are implemented in the peer cache and client-server cache but are disallowe
 
 NOTE: Since version 5.0, the `GemfireMetadataStore` also implements `ListenableMetadataStore`, which lets you listen to cache events by providing `MetadataStoreListener` instances to the store, as the following example shows:
 
-====
-[source,java]
-----
+```java
 GemfireMetadataStore metadataStore = new GemfireMetadataStore(cache);
 metadataStore.addListener(new MetadataStoreListenerAdapter() {
 
@@ -294,5 +232,4 @@ metadataStore.addListener(new MetadataStoreListenerAdapter() {
     }
 
 });
-----
-====
+```
