@@ -66,9 +66,9 @@ dependencies {
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
 }
 
-tasks.withType(JavaForkOptions) {
-    jvmArgs "--add-opens", "jdk.management/com.sun.management.internal=ALL-UNNAMED"
-}
+//tasks.withType(JavaForkOptions) {
+//    jvmArgs "--add-opens", "jdk.management/com.sun.management.internal=ALL-UNNAMED"
+//}
 
 test {
     useJUnitPlatform()
