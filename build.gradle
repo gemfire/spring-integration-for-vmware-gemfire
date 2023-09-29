@@ -26,8 +26,13 @@ project.ext.set("pomProjectLongName", "Spring Integration for VMware GemFire")
 project.ext.set("pomProjectArtifactName", "spring-integration-6.1-gemfire-${getGemFireBaseVersion()}")
 project.ext.set("pomProjectDescription", "Spring Integration For VMware GemFire")
 
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.integration:spring-integration-bom:$springIntegrationBom")
+    }
+}
+
 dependencies {
-    api(platform("org.springframework.integration:spring-integration-bom:$springIntegrationBom"))
     api "org.springframework.integration:spring-integration-core"
     api("com.vmware.gemfire:spring-data-3.1-gemfire-10.0:$springDataGemfire") {
         exclude group: "org.springframework"
@@ -64,6 +69,7 @@ dependencies {
     testImplementation "ch.qos.logback:logback-classic:$logback"
     testImplementation "org.slf4j:log4j-over-slf4j:$log4jOverSlf4j"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
+    testImplementation 'com.vmware.gemfire:gemfire-testcontainers:1.0'
 }
 
 tasks.withType(JavaForkOptions) {

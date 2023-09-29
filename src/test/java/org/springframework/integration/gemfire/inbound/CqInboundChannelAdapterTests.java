@@ -5,11 +5,7 @@
 
 package org.springframework.integration.gemfire.inbound;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.io.IOException;
-import java.io.OutputStream;
-
+import com.vmware.gemfire.testcontainers.GemFireClusterContainer;
 import org.apache.geode.cache.Region;
 import org.apache.geode.cache.query.CqEvent;
 import org.junit.jupiter.api.AfterAll;
@@ -25,6 +21,10 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.PollableChannel;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+
+import java.io.OutputStream;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author David Turanski
@@ -52,11 +52,20 @@ public class CqInboundChannelAdapterTests {
 	@Autowired
 	ContinuousQueryMessageProducer withDurable;
 
-	static OutputStream os;
+	private static GemFireClusterContainer gemFireClusterContainer;
 
 	@BeforeAll
 	public static void startUp() {
-		os = ForkUtil.cacheServer();
+		gemFireClusterContainer = new GemFireClusterContainer(1, "gemfire/gemfire:10.0.1");
+
+		gemFireClusterContainer.acceptLicense().start();
+
+		gemFireClusterContainer.gfsh(
+				false,
+				"create region --name=test --type=REPLICATE");
+
+		System.setProperty("gemfire.locator.port",String.valueOf(gemFireClusterContainer.getLocatorPort()));
+
 	}
 
 	@Test
@@ -82,13 +91,7 @@ public class CqInboundChannelAdapterTests {
 	}
 
 	public static void sendSignal() {
-		try {
-			os.write("\n".getBytes());
-			os.flush();
-		}
-		catch (IOException ex) {
-			throw new IllegalStateException("Cannot communicate with forked VM", ex);
-		}
+		gemFireClusterContainer.stop();
 	}
 
 }
