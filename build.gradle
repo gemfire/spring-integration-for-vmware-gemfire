@@ -22,8 +22,10 @@ javadoc{
     failOnError=false
 }
 
+def gemfireBaseVersion=getGemFireBaseVersion()
+
 project.ext.set("pomProjectLongName", "Spring Integration for VMware GemFire")
-project.ext.set("pomProjectArtifactName", "spring-integration-5.5-gemfire-${getGemFireBaseVersion()}")
+project.ext.set("pomProjectArtifactName", "spring-integration-5.5-gemfire-$gemfireBaseVersion")
 project.ext.set("pomProjectDescription", "Spring Integration For VMware GemFire")
 
 dependencies {
