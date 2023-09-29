@@ -28,7 +28,7 @@
 		id="client-cache" pool-name="client-pool" />
 
 	<gfe:pool id="client-pool" subscription-enabled="true">
-		<gfe:server host="localhost" port="40404" />
+		<gfe:locator host="localhost" port="${gemfire.locator.port}" />
 	</gfe:pool>
 
 	<gfe:client-region id="test" cache-ref="client-cache"
