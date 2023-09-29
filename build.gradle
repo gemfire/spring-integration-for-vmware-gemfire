@@ -28,8 +28,13 @@ project.ext.set("pomProjectLongName", "Spring Integration for VMware GemFire")
 project.ext.set("pomProjectArtifactName", "spring-integration-5.5-gemfire-$gemfireBaseVersion")
 project.ext.set("pomProjectDescription", "Spring Integration For VMware GemFire")
 
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.integration:spring-integration-bom:$springIntegrationBom")
+    }
+}
+
 dependencies {
-    api(platform("org.springframework.integration:spring-integration-bom:$springIntegrationBom"))
     api "org.springframework.integration:spring-integration-core"
     api("com.vmware.gemfire:spring-data-2.7-gemfire-10.0:$springDataGemfire") {
         exclude group: "org.springframework"
@@ -42,7 +47,7 @@ dependencies {
         exclude module: "shiro-cache"
         exclude module: "commons-logging"
     }
-    api "commons-io:commons-io:$commonsIO"
+    implementation "commons-io:commons-io:$commonsIO"
     compileOnly("com.vmware.gemfire:gemfire-core:$gemfireVersion") {
         exclude module: "commons-logging"
     }
