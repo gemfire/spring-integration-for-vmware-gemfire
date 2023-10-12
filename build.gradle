@@ -18,7 +18,8 @@ java {
     withSourcesJar()
 }
 
-javadoc{
+javadoc {
+    title = "Spring Integration 6.1 for VMware GemFire ${getGemFireBaseVersion()} Java API Reference"
     failOnError=false
 }
 
