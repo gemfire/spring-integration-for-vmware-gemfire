@@ -19,14 +19,14 @@ java {
 }
 
 javadoc {
-    title = "Spring Integration 5.5 for VMware GemFire ${getGemFireBaseVersion()} Java API Reference"
+    title = "Spring Integration ${getSpringIntegrationBaseVersion()} for VMware GemFire ${getGemFireBaseVersion()} Java API Reference"
     failOnError=false
 }
 
 def gemfireBaseVersion=getGemFireBaseVersion()
 
 project.ext.set("pomProjectLongName", "Spring Integration for VMware GemFire")
-project.ext.set("pomProjectArtifactName", "spring-integration-5.5-gemfire-$gemfireBaseVersion")
+project.ext.set("pomProjectArtifactName", "spring-integration-5.5-gemfire-${getGemFireBaseVersion()}")
 project.ext.set("pomProjectDescription", "Spring Integration For VMware GemFire")
 
 dependencyManagement {
@@ -97,6 +97,10 @@ repositories {
                     })
         }
     }
+}
+
+String getSpringIntegrationBaseVersion() {
+    return getBaseVersion(springIntegrationVersion)
 }
 
 String getGemFireBaseVersion() {
