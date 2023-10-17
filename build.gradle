@@ -19,7 +19,7 @@ java {
 }
 
 javadoc {
-    title = "Spring Integration 5.5 for VMware GemFire ${getGemFireBaseVersion()} Java API Reference"
+    title = "Spring Integration ${getSpringIntegrationBaseVersion()} for VMware GemFire ${getGemFireBaseVersion()} Java API Reference"
     failOnError=false
 }
 
@@ -99,6 +99,10 @@ repositories {
                     })
         }
     }
+}
+
+String getSpringIntegrationBaseVersion() {
+    return getBaseVersion(springIntegrationVersion)
 }
 
 String getGemFireBaseVersion() {
