@@ -5,9 +5,6 @@ plugins {
     id 'spring-java-jar'
 }
 
-group = "com.vmware.gemfire"
-version = "1.0-SNAPSHOT"
-
 java {
     sourceCompatibility = "8"
     targetCompatibility = "8"
