@@ -106,7 +106,11 @@ String getSpringIntegrationBaseVersion() {
 }
 
 String getGemFireBaseVersion() {
-    def split = "${gemfireVersion}".split("\\.")
+    return getBaseVersion(gemfireVersion)
+}
+
+String getBaseVersion() {
+    def split = version.split("\\.")
     if (split.length < 2) {
         throw new RuntimeException("gemfireVersion is malformed")
     }
