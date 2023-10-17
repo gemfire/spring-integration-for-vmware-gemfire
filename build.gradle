@@ -109,7 +109,7 @@ String getGemFireBaseVersion() {
     return getBaseVersion(gemfireVersion)
 }
 
-String getBaseVersion() {
+String getBaseVersion(String version) {
     def split = version.split("\\.")
     if (split.length < 2) {
         throw new RuntimeException("gemfireVersion is malformed")
