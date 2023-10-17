@@ -19,7 +19,7 @@ java {
 }
 
 javadoc {
-    title = "Spring Integration 6.1 for VMware GemFire ${getGemFireBaseVersion()} Java API Reference"
+    title = "Spring Integration ${getSpringIntegrationBaseVersion()} for VMware GemFire ${getGemFireBaseVersion()} Java API Reference"
     failOnError=false
 }
 
@@ -29,13 +29,13 @@ project.ext.set("pomProjectDescription", "Spring Integration For VMware GemFire"
 
 dependencyManagement {
     imports {
-        mavenBom("org.springframework.integration:spring-integration-bom:$springIntegrationBom")
+        mavenBom("org.springframework.integration:spring-integration-bom:$springIntegrationVersion")
     }
 }
 
 dependencies {
     api "org.springframework.integration:spring-integration-core"
-    api("com.vmware.gemfire:spring-data-3.1-gemfire-10.0:$springDataGemfire") {
+    api("com.vmware.gemfire:spring-data-3.1-gemfire-10.0:$springDataGemfireVersion") {
         exclude group: "org.springframework"
         exclude module: "shiro-event"
         exclude module: "shiro-lang"
@@ -99,6 +99,10 @@ repositories {
                     })
         }
     }
+}
+
+String getSpringIntegrationBaseVersion() {
+    return getBaseVersion(springIntegrationVersion)
 }
 
 String getGemFireBaseVersion() {
