@@ -29,7 +29,7 @@ project.ext.set("pomProjectDescription", "Spring Integration For VMware GemFire"
 
 dependencyManagement {
     imports {
-        mavenBom("org.springframework.integration:spring-integration-bom:$springIntegrationBom")
+        mavenBom("org.springframework.integration:spring-integration-bom:$springIntegrationVersion")
     }
 }
 
