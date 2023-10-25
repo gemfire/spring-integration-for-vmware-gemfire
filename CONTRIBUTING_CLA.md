@@ -4,7 +4,7 @@ We welcome contributions from the community and first want to thank you for taki
 
 Please familiarize yourself with the [Code of Conduct](https://github.com/vmware/.github/blob/main/CODE_OF_CONDUCT.md) before contributing.
 
-Before you start working with spring-data-for-vmware-gemfire, please read and sign our Contributor License Agreement [CLA](https://cla.vmware.com/cla/1/preview). If you wish to contribute code and you have not signed our contributor license agreement (CLA), our bot will prompt you to do so when you open a Pull Request. For any questions about the CLA process, please refer to our [FAQ]([https://cla.vmware.com/faq](https://cla.vmware.com/faq)).
+Before you start working with spring-integration-for-vmware-gemfire, please read and sign our Contributor License Agreement [CLA](https://cla.vmware.com/cla/1/preview). If you wish to contribute code and you have not signed our contributor license agreement (CLA), our bot will prompt you to do so when you open a Pull Request. For any questions about the CLA process, please refer to our [FAQ]([https://cla.vmware.com/faq](https://cla.vmware.com/faq)).
 
 ## Ways to contribute
 
@@ -25,7 +25,7 @@ This project provides an integration between [VMware GemFire](https://tanzu.vmwa
 This project has a dependency on [VMware GemFire](https://tanzu.vmware.com/gemfire), which has the requirement that one has access to it, in order to build, run, develop, test it.
 Follow the following steps to gain access to the GemFire releases. [Obtaining VMware GemFire from a Maven Repository](https://docs.vmware.com/en/VMware-GemFire/10.0/gf/getting_started-installation-obtain_gemfire_maven.html)
 
-This project is dependent on JDK8 and is tested with JDK 1.8.0_352 and uses Gradle.
+This project is dependent on JDK17 and is tested with JDK 17.0.7 and uses Gradle.
 
 Once the project is cloned running `./gradlew build` to confirm everything works.
 
