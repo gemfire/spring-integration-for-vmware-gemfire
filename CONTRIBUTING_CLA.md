@@ -25,7 +25,7 @@ This project provides an integration between [VMware GemFire](https://tanzu.vmwa
 This project has a dependency on [VMware GemFire](https://tanzu.vmware.com/gemfire), which has the requirement that one has access to it, in order to build, run, develop, test it.
 Follow the following steps to gain access to the GemFire releases. [Obtaining VMware GemFire from a Maven Repository](https://docs.vmware.com/en/VMware-GemFire/10.0/gf/getting_started-installation-obtain_gemfire_maven.html)
 
-This project is dependent on JDK8 and is tested with JDK 1.8.0_352 and uses Gradle.
+This project is dependent on JDK17 and is tested with JDK 17.0.7 and uses Gradle.
 
 Once the project is cloned running `./gradlew build` to confirm everything works.
 
