@@ -35,7 +35,7 @@ dependencyManagement {
 
 dependencies {
     api "org.springframework.integration:spring-integration-core"
-    api("com.vmware.gemfire:spring-data-3.2-gemfire-10.1:$springDataGemfire") {
+    api("com.vmware.gemfire:spring-data-3.2-gemfire-10.1:$springDataGemFireVersion") {
         exclude group: "org.springframework"
         exclude module: "shiro-event"
         exclude module: "shiro-lang"
