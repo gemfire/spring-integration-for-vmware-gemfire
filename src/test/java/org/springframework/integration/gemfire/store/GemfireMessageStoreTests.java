@@ -119,7 +119,7 @@ public class GemfireMessageStoreTests {
 		}
 
 		MessageGroupMetadata messageGroupMetadata =
-				(MessageGroupMetadata) region.get("foo_" + "MESSAGE_GROUP_" + groupId);
+				(MessageGroupMetadata) region.get("foo_" + "GROUP_OF_MESSAGES_" + groupId);
 
 		assertThat(messageGroupMetadata).isNotNull();
 		assertThat(messageGroupMetadata.size()).isEqualTo(25);
