@@ -52,11 +52,11 @@ public class CqInboundChannelAdapterTests {
 	@Autowired
 	ContinuousQueryMessageProducer withDurable;
 
-	private static GemFireClusterContainer gemFireClusterContainer;
+	private static GemFireClusterContainer<?> gemFireClusterContainer;
 
 	@BeforeAll
 	public static void startUp() {
-		gemFireClusterContainer = new GemFireClusterContainer(1, "gemfire/gemfire:10.0.1");
+		gemFireClusterContainer = new GemFireClusterContainer<>(1, "dev.registry.pivotal.io/pivotal-gemfire/vmware-gemfire:blessed-10.1");
 
 		gemFireClusterContainer.acceptLicense().start();
 
