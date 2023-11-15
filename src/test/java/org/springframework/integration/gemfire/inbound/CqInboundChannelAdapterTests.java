@@ -15,14 +15,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.integration.gemfire.fork.ForkUtil;
 import org.springframework.integration.test.util.TestUtils;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.PollableChannel;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-
-import java.io.OutputStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,6 +32,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringJUnitConfig
 @DirtiesContext
 public class CqInboundChannelAdapterTests {
+
+	private static final String GEMFIRE_DOCKER_IMAGE_PROPERTY = "spring.test.gemfire.docker.image";
 
 	@Autowired
 	@Qualifier("test")
@@ -56,7 +55,7 @@ public class CqInboundChannelAdapterTests {
 
 	@BeforeAll
 	public static void startUp() {
-		gemFireClusterContainer = new GemFireClusterContainer<>(1, "dev.registry.pivotal.io/pivotal-gemfire/vmware-gemfire:blessed-10.1");
+		gemFireClusterContainer = new GemFireClusterContainer<>(1, System.getProperty(GEMFIRE_DOCKER_IMAGE_PROPERTY));
 
 		gemFireClusterContainer.acceptLicense().start();
 
@@ -93,5 +92,4 @@ public class CqInboundChannelAdapterTests {
 	public static void sendSignal() {
 		gemFireClusterContainer.stop();
 	}
-
 }
