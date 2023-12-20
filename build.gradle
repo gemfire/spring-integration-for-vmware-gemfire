@@ -79,10 +79,6 @@ dependencies {
     testImplementation 'com.vmware.gemfire:gemfire-testcontainers:1.0'
 }
 
-//tasks.withType(JavaForkOptions) {
-//    jvmArgs "--add-opens", "jdk.management/com.sun.management.internal=ALL-UNNAMED"
-//}
-
 test {
     useJUnitPlatform()
 }
