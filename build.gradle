@@ -76,7 +76,7 @@ dependencies {
     testImplementation "ch.qos.logback:logback-classic:$logback"
     testImplementation "org.slf4j:log4j-over-slf4j:$log4jOverSlf4j"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
-    testImplementation 'com.vmware.gemfire:gemfire-testcontainers:1.0'
+    testImplementation 'com.vmware.gemfire:gemfire-testcontainers:1.1'
 }
 
 tasks.withType(JavaForkOptions) {
