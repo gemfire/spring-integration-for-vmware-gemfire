@@ -17,7 +17,6 @@ dependencyResolutionManagement {
             val properties = Properties()
             properties.load(FileInputStream("gradle.properties"))
             versionOverrideFromProperties(this, properties)
-            from(files("catalogs/libs.versions.toml"))
         }
     }
 }

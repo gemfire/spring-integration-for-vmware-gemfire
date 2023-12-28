@@ -40,7 +40,7 @@ publishing {
                     withXml {
                         val providerAsElement = asElement()
                         providerAsElement.insertBefore(
-                            providerAsElement.getOwnerDocument().createComment(license),
+                            providerAsElement.ownerDocument.createComment(license),
                             providerAsElement.firstChild
                         )
                     }

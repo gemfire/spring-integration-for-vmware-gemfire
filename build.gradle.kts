@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import com.google.cloud.storage.BlobId
 import com.google.cloud.storage.BlobInfo
 import com.google.cloud.storage.StorageOptions
@@ -15,6 +16,8 @@ buildscript {
 plugins {
     id("java-library")
     id("gemfire-repo-artifact-publishing")
+    id("com.github.ben-manes.versions") version "0.50.0"
+    id("nl.littlerobots.version-catalog-update") version "0.8.3"
 }
 
 java {
@@ -54,7 +57,7 @@ dependencies {
     }
     api(libs.commons.io)
     compileOnly(libs.gemfire.core) {
-        exclude(module="commons-logging")
+        exclude(module = "commons-logging")
     }
     compileOnly(libs.gemfire.cq)
 
@@ -94,8 +97,8 @@ repositories {
     mavenCentral()
     maven {
         credentials {
-            username = providers.gradleProperty("gemfireRepoUsername").get()
-            password = providers.gradleProperty("gemfireRepoPassword").get()
+            username = property("gemfireRepoUsername") as String
+            password = property("gemfireRepoPassword") as String
         }
         url = uri("https://commercial-repo.pivotal.io/data3/gemfire-release-repo/gemfire")
     }
@@ -108,12 +111,13 @@ repositories {
         }
     }
 }
+
 private fun getSpringIntegrationBaseVersion(): String {
-    return getBaseVersion(project.findProperty("springIntegrationVersion").toString())
+    return getBaseVersion(property("springIntegrationVersion").toString())
 }
 
 private fun getGemFireBaseVersion(): String {
-    return getBaseVersion(project.findProperty("gemfireVersion").toString())
+    return getBaseVersion(property("gemfireVersion").toString())
 }
 
 private fun getBaseVersion(version: String): String {
@@ -128,14 +132,51 @@ tasks.register("copyJavadocsToBucket") {
     val javadocJarTask = tasks.named("javadocJar")
     dependsOn(javadocJarTask)
     doLast {
-        val storage = StorageOptions.newBuilder().setProjectId(project.findProperty("docsGCSProject").toString())
+        val storage = StorageOptions.newBuilder().setProjectId(property("docsGCSProject").toString())
             .build().getService()
         val javadocJarFiles = javadocJarTask.get().outputs.files
         val blobId = BlobId.of(
-            project.findProperty("docsGCSBucket").toString(),
-            "${project.findProperty("pomProjectArtifactName")}/${project.version}/${javadocJarFiles.singleFile.name}"
+            property("docsGCSBucket").toString(),
+            "${property("pomProjectArtifactName")}/${project.version}/${javadocJarFiles.singleFile.name}"
         )
         val blobInfo = BlobInfo.newBuilder(blobId).build()
         storage.createFrom(blobInfo, javadocJarFiles.singleFile.toPath())
     }
+}
+
+versionCatalogUpdate {
+    // These options will be set as default for all version catalogs
+    sortByKey = true
+    // Referenced that are pinned are not automatically updated.
+    // They are also not automatically kept however (use keep for that).
+    pin {
+    }
+    keep {
+        keepUnusedVersions = true
+        // keep all libraries that aren't used in the project
+        keepUnusedLibraries = true
+        // keep all plugins that aren't used in the project
+        keepUnusedPlugins = true
+    }
+}
+
+tasks.withType<DependencyUpdatesTask> {
+    rejectVersionIf {
+        !isPatch(candidate.version, currentVersion)
+    }
+}
+
+fun isPatch(candidateVersion: String, currentVersion: String): Boolean {
+    val candidateSplit = candidateVersion.split(".")
+    val currentSplit = currentVersion.split(".")
+
+    if (candidateSplit.size == currentSplit.size && currentSplit.size == 3) {
+        if (candidateSplit[0] != currentSplit[0]) {
+            return false
+        }
+        if (candidateSplit[1] != currentSplit[1]) {
+            return false
+        }
+    }
+    return false
 }
