@@ -1,6 +1,0 @@
-pluginManagement {
-    includeBuild('build-tools/publishing')
-}
-rootProject.name = 'spring-integration-gemfire'
-
-

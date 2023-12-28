@@ -1,0 +1,33 @@
+[versions]
+springTest = "6.0.15"
+commonsIO = "2.13.0"
+junitBom = "5.10.0"
+logback = "1.4.14"
+log4jOverSlf4j = "2.0.9"
+mockito = "3.12.4"
+assertJCore = "3.24.2"
+gemfireTestcontainers = "1.1"
+
+
+[libraries]
+gemfire-core = { module = "com.vmware.gemfire:gemfire-core", version.ref = "gemfireVersion" } #this value comes from gradle.properties
+gemfire-cq = { module = "com.vmware.gemfire:gemfire-cq", version.ref = "gemfireVersion" } #this value comes from gradle.properties
+gemfire-testcontainers = { module = "com.vmware.gemfire:gemfire-testcontainers", version.ref = "gemfireTestcontainers" }
+
+commons-io = { module = "commons-io:commons-io", version.ref = "commonsIO" }
+
+assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertJCore" }
+spring-test = { module = "org.springframework:spring-test", version.ref = "springTest" }
+mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
+
+logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+log4j-over-slf4j = { module = "org.slf4j:log4j-over-slf4j", version.ref = "log4jOverSlf4j" }
+
+junit-bom = { module = "org.junit:junit-bom", version.ref = "junitBom" }
+spring-integration-bom = { module = "org.springframework.integration:spring-integration-bom", version.ref = "springIntegrationVersion" }#this value comes from gradle.properties
+
+spring-data-gemfire = {module ="com.vmware.gemfire:spring-data-3.1-gemfire-10.0",version.ref="springDataGemfireVersion"}#this value comes from gradle.properties
+
+[bundles]
+
+[plugins]
