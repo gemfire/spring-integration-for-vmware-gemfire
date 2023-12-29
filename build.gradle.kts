@@ -63,7 +63,9 @@ dependencies {
 
     testImplementation(platform(libs.junit.bom))
 
-    testImplementation("org.springframework.integration:spring-integration-test-support")
+    testImplementation("org.springframework.integration:spring-integration-test-support"){
+        exclude(module="mockito-core")
+    }
     testImplementation(libs.gemfire.core) {
         exclude(module = "commons-logging")
     }

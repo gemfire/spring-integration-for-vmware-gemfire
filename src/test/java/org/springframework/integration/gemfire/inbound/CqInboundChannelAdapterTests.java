@@ -56,7 +56,7 @@ public class CqInboundChannelAdapterTests {
 
 	@BeforeAll
 	public static void startUp() {
-		gemFireClusterContainer = new GemFireClusterContainer(1, "gemfire/gemfire:10.0.1");
+		gemFireClusterContainer = new GemFireClusterContainer(1, "gemfire/gemfire:10.0.2");
 
 		gemFireClusterContainer.acceptLicense().start();
 
