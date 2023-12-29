@@ -170,5 +170,5 @@ fun isPatch(candidateVersion: String, currentVersion: String): Boolean {
             return false
         }
     }
-    return false
+    return true
 }
