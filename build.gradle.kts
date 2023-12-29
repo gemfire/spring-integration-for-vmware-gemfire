@@ -117,7 +117,11 @@ private fun getBaseVersion(version: String): String {
     if (split.size < 2) {
         throw RuntimeException("version is malformed")
     }
-    return "$split[0].$split[1]"
+    return "${split[0]}.${split[1]}"
+}
+
+tasks.register("something"){
+    getGemFireBaseVersion()
 }
 
 tasks.register("copyJavadocsToBucket") {
