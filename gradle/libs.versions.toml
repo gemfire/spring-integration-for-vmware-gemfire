@@ -7,6 +7,8 @@ log4jOverSlf4j = "2.0.10"
 mockito = { require = "3.12.4" }
 assertJCore = "3.24.2"
 gemfireTestcontainers = "1.1"
+benManesVersions="0.50.0"
+littlerobotsVersionCatalogUpdate="0.8.3"
 
 [libraries]
 gemfire-core = { module = "com.vmware.gemfire:gemfire-core", version.ref = "gemfireVersion" }
@@ -21,3 +23,8 @@ log4j-over-slf4j = { module = "org.slf4j:log4j-over-slf4j", version.ref = "log4j
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junitBom" }
 spring-integration-bom = { module = "org.springframework.integration:spring-integration-bom", version.ref = "springIntegrationVersion" }
 spring-data-gemfire = { module = "com.vmware.gemfire:spring-data-3.2-gemfire-10.1", version.ref = "springDataGemfireVersion" }
+
+
+[plugins]
+ben-manes-versions={id="com.github.ben-manes.versions", version.ref="benManesVersions"}
+littlerobots-version-catalog-update={id="nl.littlerobots.version-catalog-update", version.ref="littlerobotsVersionCatalogUpdate"}

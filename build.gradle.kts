@@ -16,8 +16,8 @@ buildscript {
 plugins {
     id("java-library")
     id("gemfire-repo-artifact-publishing")
-    id("com.github.ben-manes.versions") version "0.50.0"
-    id("nl.littlerobots.version-catalog-update") version "0.8.3"
+    alias(libs.plugins.ben.manes.versions)
+    alias(libs.plugins.littlerobots.version.catalog.update)
 }
 
 java {
