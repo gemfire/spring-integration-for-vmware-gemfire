@@ -1,5 +1,5 @@
 /*
- * Copyright (c) VMware, Inc. 2023. All rights reserved.
+ * Copyright (c) VMware, Inc. 2023-2024. All rights reserved.
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -124,12 +124,12 @@ tasks.register("copyJavadocsToBucket") {
     val javadocJarTask = tasks.named("javadocJar")
     dependsOn(javadocJarTask)
     doLast {
-        val storage = StorageOptions.newBuilder().setProjectId(property("docsGCSProject").toString())
+        val storage = StorageOptions.newBuilder().setProjectId(project.properties["docsGCSProject"].toString())
             .build().getService()
         val javadocJarFiles = javadocJarTask.get().outputs.files
         val blobId = BlobId.of(
-            property("docsGCSBucket").toString(),
-            "${property("pomProjectArtifactName")}/${project.version}/${javadocJarFiles.singleFile.name}"
+            project.properties["docsGCSBucket"].toString(),
+            "${publishingDetails.artifactName.get()}/${project.version}/${javadocJarFiles.singleFile.name}"
         )
         val blobInfo = BlobInfo.newBuilder(blobId).build()
         storage.createFrom(blobInfo, javadocJarFiles.singleFile.toPath())
