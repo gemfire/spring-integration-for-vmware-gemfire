@@ -10,14 +10,14 @@ import com.google.cloud.storage.StorageOptions
 
 buildscript {
     dependencies {
-        classpath("com.google.cloud:google-cloud-storage:2.30.1")
+        classpath("com.google.cloud:google-cloud-storage:2.30.2")
     }
 }
 plugins {
     id("java-library")
     id("gemfire-repo-artifact-publishing")
     id("com.github.ben-manes.versions") version "0.50.0"
-    id("nl.littlerobots.version-catalog-update") version "0.8.3"
+    id("nl.littlerobots.version-catalog-update") version "0.8.4"
 }
 
 java {
