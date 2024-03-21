@@ -10,7 +10,7 @@ import com.google.cloud.storage.StorageOptions
 
 buildscript {
     dependencies {
-        classpath("com.google.cloud:google-cloud-storage:2.30.1")
+        classpath("com.google.cloud:google-cloud-storage:2.30.2")
     }
 }
 plugins {
