@@ -1,9 +1,9 @@
 [versions]
-springTest = "5.3.31"
+springTest = "5.3.33"
 commonsIO = "2.13.0"
-junitBom = "5.10.1"
+junitBom = "5.10.2"
 logback = "1.2.13"
-log4jOverSlf4j = "2.0.10"
+log4jOverSlf4j = "2.0.12"
 mockito = "3.12.4"
 assertJCore = "3.24.2"
 gemfireTestcontainers = "1.1"
