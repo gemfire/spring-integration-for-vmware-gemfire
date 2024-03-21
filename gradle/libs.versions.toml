@@ -1,14 +1,14 @@
 [versions]
-springTest = "6.1.2"
-commonsIO = "2.15.0"
-junitBom = "5.10.1"
+springTest = "6.1.5"
+commonsIO = "2.15.1"
+junitBom = "5.10.2"
 logback = "1.4.14"
-log4jOverSlf4j = "2.0.10"
+log4jOverSlf4j = "2.0.12"
 mockito = { require = "3.12.4" }
 assertJCore = "3.24.2"
 gemfireTestcontainers = "1.1"
 benManesVersions="0.50.0"
-littlerobotsVersionCatalogUpdate="0.8.3"
+littlerobotsVersionCatalogUpdate="0.8.4"
 
 [libraries]
 gemfire-core = { module = "com.vmware.gemfire:gemfire-core", version.ref = "gemfireVersion" }
