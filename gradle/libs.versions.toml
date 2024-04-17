@@ -1,12 +1,12 @@
 [versions]
-springTest = "5.3.33"
+springTest = "5.3.34"
 commonsIO = "2.13.0"
 junitBom = "5.10.2"
 logback = "1.2.13"
-log4jOverSlf4j = "2.0.12"
+log4jOverSlf4j = "2.0.13"
 mockito = "3.12.4"
 assertJCore = "3.24.2"
-gemfireTestcontainers = "1.1"
+gemfireTestcontainers = "2.1.0"
 
 [libraries]
 gemfire-core = { module = "com.vmware.gemfire:geode-core", version.ref = "gemfireVersion" }
