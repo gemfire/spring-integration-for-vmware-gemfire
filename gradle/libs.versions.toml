@@ -1,12 +1,12 @@
 [versions]
-springTest = "6.1.5"
+springTest = "6.1.6"
 commonsIO = "2.15.1"
 junitBom = "5.10.2"
 logback = "1.4.14"
-log4jOverSlf4j = "2.0.12"
+log4jOverSlf4j = "2.0.13"
 mockito = { require = "3.12.4" }
 assertJCore = "3.24.2"
-gemfireTestcontainers = "1.1"
+gemfireTestcontainers = "2.1.0"
 benManesVersions="0.50.0"
 littlerobotsVersionCatalogUpdate="0.8.4"
 
