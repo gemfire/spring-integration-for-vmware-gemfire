@@ -6,7 +6,7 @@ logback = "1.2.13"
 log4jOverSlf4j = "2.0.13"
 mockito = "3.12.4"
 assertJCore = "3.24.2"
-gemfireTestcontainers = "2.1.0"
+gemfireTestcontainers = "1.1"
 
 [libraries]
 gemfire-core = { module = "com.vmware.gemfire:geode-core", version.ref = "gemfireVersion" }
