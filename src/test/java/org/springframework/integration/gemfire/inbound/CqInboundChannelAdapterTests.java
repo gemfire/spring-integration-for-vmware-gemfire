@@ -6,7 +6,6 @@
 package org.springframework.integration.gemfire.inbound;
 
 import com.vmware.gemfire.testcontainers.GemFireCluster;
-import com.vmware.gemfire.testcontainers.GemFireClusterContainer;
 import org.apache.geode.cache.Region;
 import org.apache.geode.cache.query.CqEvent;
 import org.junit.jupiter.api.AfterAll;
