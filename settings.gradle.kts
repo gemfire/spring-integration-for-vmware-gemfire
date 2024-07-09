@@ -8,6 +8,7 @@ import java.util.*
 
 pluginManagement {
     includeBuild("build-tools/publishing")
+    includeBuild("build-tools/convention-plugins")
 }
 rootProject.name = "spring-integration-gemfire"
 

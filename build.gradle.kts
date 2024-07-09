@@ -16,6 +16,7 @@ buildscript {
 plugins {
     id("java-library")
     id("gemfire-repo-artifact-publishing")
+    id("commercial-repositories")
     alias(libs.plugins.ben.manes.versions)
     alias(libs.plugins.littlerobots.version.catalog.update)
 }
@@ -98,13 +99,6 @@ tasks.withType(Test::class.java) {
 
 repositories {
     mavenCentral()
-    maven {
-        credentials {
-            username = property("gemfireRepoUsername") as String
-            password = property("gemfireRepoPassword") as String
-        }
-        url = uri("https://commercial-repo.pivotal.io/data3/gemfire-release-repo/gemfire")
-    }
     val additionalMavenRepoURLs = project.findProperty("additionalMavenRepoURLs").toString()
     if (!additionalMavenRepoURLs.isNullOrBlank() && additionalMavenRepoURLs.isNotEmpty()) {
         additionalMavenRepoURLs.split(",").forEach {

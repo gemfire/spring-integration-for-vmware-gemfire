@@ -6,14 +6,14 @@ logback = "1.4.14"
 log4jOverSlf4j = "2.0.13"
 mockito = { require = "3.12.4" }
 assertJCore = "3.24.2"
-gemfireTestcontainers = "1.1"
+gemfireTestcontainers = "2.3.0"
 benManesVersions="0.50.0"
 littlerobotsVersionCatalogUpdate="0.8.4"
 
 [libraries]
 gemfire-core = { module = "com.vmware.gemfire:gemfire-core", version.ref = "gemfireVersion" }
 gemfire-cq = { module = "com.vmware.gemfire:gemfire-cq", version.ref = "gemfireVersion" }
-gemfire-testcontainers = { module = "com.vmware.gemfire:gemfire-testcontainers", version.ref = "gemfireTestcontainers" }
+gemfire-testcontainers = { module = "dev.gemfire:gemfire-testcontainers", version.ref = "gemfireTestcontainers" }
 commons-io = { module = "commons-io:commons-io", version.ref = "commonsIO" }
 assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertJCore" }
 spring-test = { module = "org.springframework:spring-test", version.ref = "springTest" }
