@@ -92,10 +92,12 @@ tasks.all {
   }
 }
 
-tasks.withType(Test::class.java) {
-  useJUnitPlatform()
-  val springTestGemfireDockerImage: String by project
-  systemProperty("spring.test.gemfire.docker.image", springTestGemfireDockerImage)
+tasks {
+  test {
+    useJUnitPlatform()
+    val springTestGemfireDockerImage: String by project
+    systemProperty("spring.test.gemfire.docker.image", springTestGemfireDockerImage)
+  }
 }
 
 repositories {
