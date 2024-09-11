@@ -19,6 +19,7 @@ plugins {
   id("commercial-repositories")
   alias(libs.plugins.ben.manes.versions)
   alias(libs.plugins.littlerobots.version.catalog.update)
+  id("gemfire-artifactory")
 }
 
 java {
