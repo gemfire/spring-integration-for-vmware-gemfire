@@ -136,14 +136,6 @@ tasks.getByName<Test>("test") {
   systemProperty("spring.test.gemfire.docker.image", springTestGemfireDockerImage)
 }
 
-tasks.register("publishToInternalGCS") {
-  group = "publishing"
-  description = "Publishes all Maven publications to internal GCS repository."
-  dependsOn(tasks.withType<PublishToMavenRepository>().matching {
-    it.repository == publishing.repositories["GCS"]
-  })
-}
-
 tasks.register("copyJavadocsToBucket") {
   val javadocJarTask = tasks.named("javadocJar")
   dependsOn(javadocJarTask)

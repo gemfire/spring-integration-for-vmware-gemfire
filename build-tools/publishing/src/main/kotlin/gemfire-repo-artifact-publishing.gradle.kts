@@ -7,7 +7,7 @@ import com.vmware.gemfire.publishing.extension.ManifestExtension
 import org.gradle.jvm.tasks.Jar
 
 plugins {
-    id("maven-publish")
+  id("maven-publish")
 
 }
 
