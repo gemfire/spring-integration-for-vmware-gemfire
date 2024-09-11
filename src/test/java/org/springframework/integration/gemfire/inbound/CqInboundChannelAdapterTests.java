@@ -5,7 +5,7 @@
 
 package org.springframework.integration.gemfire.inbound;
 
-import com.vmware.gemfire.testcontainers.GemFireClusterContainer;
+import com.vmware.gemfire.testcontainers.GemFireCluster;
 import org.apache.geode.cache.Region;
 import org.apache.geode.cache.query.CqEvent;
 import org.junit.jupiter.api.AfterAll;
@@ -33,65 +33,64 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DirtiesContext
 public class CqInboundChannelAdapterTests {
 
-    @Autowired
-    @Qualifier("test")
-    Region<String, Integer> region;
+  @Autowired
+  @Qualifier("test")
+  Region<String, Integer> region;
 
-    @Autowired
-    ConfigurableApplicationContext applicationContext;
+  @Autowired
+  ConfigurableApplicationContext applicationContext;
 
-    @Autowired
-    PollableChannel outputChannel1;
+  @Autowired
+  PollableChannel outputChannel1;
 
-    @Autowired
-    PollableChannel outputChannel2;
+  @Autowired
+  PollableChannel outputChannel2;
 
-    @Autowired
-    ContinuousQueryMessageProducer withDurable;
+  @Autowired
+  ContinuousQueryMessageProducer withDurable;
 
-    private static GemFireClusterContainer gemFireClusterContainer;
+  private static GemFireCluster gemFireClusterContainer;
 
-    static OutputStream os;
+  static OutputStream os;
 
-    @BeforeAll
-    public static void startUp() {
-//		os = ForkUtil.cacheServer();
-        gemFireClusterContainer = new GemFireClusterContainer(1, "gemfire/gemfire:10.0.1");
+  @BeforeAll
+  public static void startUp() {
+    gemFireClusterContainer = new GemFireCluster(System.getProperty("spring.test.gemfire.docker.image"), 1, 1);
 
-        gemFireClusterContainer.acceptLicense().start();
+    gemFireClusterContainer.acceptLicense().start();
 
-        gemFireClusterContainer.gfsh(
-                false,
-                "create region --name=test --type=REPLICATE");
+    gemFireClusterContainer.gfsh(
+        false,
+        "create region --name=test --type=REPLICATE");
 
-        System.setProperty("gemfire.locator.port",String.valueOf(gemFireClusterContainer.getLocatorPort()));
+    System.setProperty("gemfire.locator.port", String.valueOf(gemFireClusterContainer.getLocatorPort()));
 
-    }
+  }
 
-    @Test
-    public void testCqEvent() {
-        assertThat(TestUtils.getPropertyValue(withDurable, "durable", Boolean.class)).isTrue();
-        region.put("one", 1);
-        Message<?> msg = outputChannel1.receive(10000);
-        assertThat(msg).isNotNull();
-        assertThat(msg.getPayload() instanceof CqEvent).isTrue();
-    }
+  @Test
+  public void testCqEvent() {
+    assertThat(TestUtils.getPropertyValue(withDurable, "durable", Boolean.class)).isTrue();
+    region.put("one", 1);
+    Message<?> msg = outputChannel1.receive(10000);
+    assertThat(msg).isNotNull();
+    assertThat(msg.getPayload() instanceof CqEvent).isTrue();
+  }
 
-    @Test
-    public void testPayloadExpression() {
-        region.put("one", 1);
-        Message<?> msg = outputChannel2.receive(10000);
-        assertThat(msg).isNotNull();
-        assertThat(msg.getPayload()).isEqualTo(1);
-    }
+  @Test
+  public void testPayloadExpression() {
+    region.put("one", 1);
+    Message<?> msg = outputChannel2.receive(10000);
+    assertThat(msg).isNotNull();
+    assertThat(msg.getPayload()).isEqualTo(1);
+  }
 
-    @AfterAll
-    public static void cleanUp() {
-        sendSignal();
-    }
+  @AfterAll
+  public static void cleanUp() {
+    sendSignal();
+  }
 
-    public static void sendSignal() {
-        gemFireClusterContainer.stop();
-    }
+  public static void sendSignal() {
+    gemFireClusterContainer.close();
+  }
 
 }
