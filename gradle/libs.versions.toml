@@ -6,7 +6,7 @@ logback = "1.4.14"
 log4jOverSlf4j = "2.0.13"
 mockito = { require = "3.12.4" }
 assertJCore = "3.24.2"
-gemfireTestcontainers = "1.1"
+gemfireTestcontainers = "2.1.0"
 
 [libraries]
 gemfire-core = { module = "com.vmware.gemfire:gemfire-core", version.ref = "gemfireVersion" }
@@ -20,4 +20,4 @@ logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "lo
 log4j-over-slf4j = { module = "org.slf4j:log4j-over-slf4j", version.ref = "log4jOverSlf4j" }
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junitBom" }
 spring-integration-bom = { module = "org.springframework.integration:spring-integration-bom", version.ref = "springIntegrationVersion" }
-spring-data-gemfire = { module = "com.vmware.gemfire:spring-data-3.1-gemfire-10.0", version.ref = "springDataGemfireVersion" }
+spring-data-gemfire = { module = "com.vmware.gemfire:spring-data-3.1-gemfire-10.0", version.ref = "springDataGemFireVersion" }

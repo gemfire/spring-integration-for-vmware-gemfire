@@ -8,6 +8,7 @@ import java.util.*
 
 pluginManagement {
     includeBuild("build-tools/publishing")
+    includeBuild("build-tools/convention-plugins")
 }
 rootProject.name = "spring-integration-gemfire"
 
@@ -22,13 +23,12 @@ dependencyResolutionManagement {
 }
 
 private fun versionOverrideFromProperty(versionCatalogBuilder: VersionCatalogBuilder, propertyName: String, propertiesFile: Properties): String {
-    val propertyValue = System.getProperty(propertyName, propertiesFile.getProperty(propertyName))
-
+    val propertyValue = providers.systemProperty(propertyName).getOrElse(propertiesFile.getProperty(propertyName))
     return versionCatalogBuilder.version(propertyName, propertyValue)
 }
 
 private fun versionOverrideFromProperties(versionCatalogBuilder: VersionCatalogBuilder, properties: Properties) {
     versionOverrideFromProperty(versionCatalogBuilder, "gemfireVersion", properties)
-    versionOverrideFromProperty(versionCatalogBuilder, "springDataGemfireVersion", properties)
+    versionOverrideFromProperty(versionCatalogBuilder, "springDataGemFireVersion", properties)
     versionOverrideFromProperty(versionCatalogBuilder, "springIntegrationVersion", properties)
 }

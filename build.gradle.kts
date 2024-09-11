@@ -9,15 +9,17 @@ import com.google.cloud.storage.BlobInfo
 import com.google.cloud.storage.StorageOptions
 
 buildscript {
-    dependencies {
-        classpath("com.google.cloud:google-cloud-storage:2.30.2")
-    }
+  dependencies {
+    classpath("com.google.cloud:google-cloud-storage:2.30.2")
+  }
 }
 plugins {
-    id("java-library")
-    id("gemfire-repo-artifact-publishing")
-    id("com.github.ben-manes.versions") version "0.50.0"
-    id("nl.littlerobots.version-catalog-update") version "0.8.4"
+  id("java-library")
+  id("gemfire-repo-artifact-publishing")
+  id("com.github.ben-manes.versions") version "0.50.0"
+  id("nl.littlerobots.version-catalog-update") version "0.8.4"
+  id("commercial-repositories")
+  id("gemfire-artifactory")
 }
 
 java {
@@ -96,89 +98,89 @@ tasks.withType(Test::class.java) {
 }
 
 repositories {
-    mavenCentral()
-    maven {
-        credentials {
-            username = property("gemfireRepoUsername") as String
-            password = property("gemfireRepoPassword") as String
-        }
-        url = uri("https://commercial-repo.pivotal.io/data3/gemfire-release-repo/gemfire")
+  mavenCentral()
+  val additionalMavenRepoURLs = project.findProperty("additionalMavenRepoURLs").toString()
+  if (!additionalMavenRepoURLs.isNullOrBlank() && additionalMavenRepoURLs.isNotEmpty()) {
+    additionalMavenRepoURLs.split(",").forEach {
+      project.repositories.maven {
+        this.url = uri(it)
+      }
     }
-    val additionalMavenRepoURLs = project.findProperty("additionalMavenRepoURLs").toString()
-    if (!additionalMavenRepoURLs.isNullOrBlank() && additionalMavenRepoURLs.isNotEmpty()) {
-        additionalMavenRepoURLs.split(",").forEach {
-            project.repositories.maven {
-                this.url = uri(it)
-            }
-        }
-    }
+  }
 }
 
 private fun getSpringIntegrationBaseVersion(): String {
-    return getBaseVersion(property("springIntegrationVersion").toString())
+  return getBaseVersion(property("springIntegrationVersion").toString())
 }
 
 private fun getGemFireBaseVersion(): String {
-    return getBaseVersion(property("gemfireVersion").toString())
+  return getBaseVersion(property("gemfireVersion").toString())
 }
 
 private fun getBaseVersion(version: String): String {
-    val split = version.split(".")
-    if (split.size < 2) {
-        throw RuntimeException("version is malformed")
-    }
-    return "${split[0]}.${split[1]}"
+  val split = version.split(".")
+  if (split.size < 2) {
+    throw RuntimeException("version is malformed")
+  }
+  return "${split[0]}.${split[1]}"
+}
+
+tasks.getByName<Test>("test") {
+  forkEvery = 1
+  maxParallelForks = 4
+  val springTestGemfireDockerImage: String by project
+  systemProperty("spring.test.gemfire.docker.image", springTestGemfireDockerImage)
 }
 
 tasks.register("copyJavadocsToBucket") {
-    val javadocJarTask = tasks.named("javadocJar")
-    dependsOn(javadocJarTask)
-    doLast {
-        val storage = StorageOptions.newBuilder().setProjectId(project.properties["docsGCSProject"].toString())
-            .build().getService()
-        val javadocJarFiles = javadocJarTask.get().outputs.files
-        val blobId = BlobId.of(
-            project.properties["docsGCSBucket"].toString(),
-            "${publishingDetails.artifactName.get()}/${project.version}/${javadocJarFiles.singleFile.name}"
-        )
-        val blobInfo = BlobInfo.newBuilder(blobId).build()
-        storage.createFrom(blobInfo, javadocJarFiles.singleFile.toPath())
-    }
+  val javadocJarTask = tasks.named("javadocJar")
+  dependsOn(javadocJarTask)
+  doLast {
+    val storage = StorageOptions.newBuilder().setProjectId(project.properties["docsGCSProject"].toString())
+      .build().getService()
+    val javadocJarFiles = javadocJarTask.get().outputs.files
+    val blobId = BlobId.of(
+      project.properties["docsGCSBucket"].toString(),
+      "${publishingDetails.artifactName.get()}/${project.version}/${javadocJarFiles.singleFile.name}"
+    )
+    val blobInfo = BlobInfo.newBuilder(blobId).build()
+    storage.createFrom(blobInfo, javadocJarFiles.singleFile.toPath())
+  }
 }
 
 versionCatalogUpdate {
-    // These options will be set as default for all version catalogs
-    sortByKey = true
-    // Referenced that are pinned are not automatically updated.
-    // They are also not automatically kept however (use keep for that).
-    pin {
-    }
-    keep {
-        keepUnusedVersions = true
-        // keep all libraries that aren't used in the project
-        keepUnusedLibraries = true
-        // keep all plugins that aren't used in the project
-        keepUnusedPlugins = true
-    }
+  // These options will be set as default for all version catalogs
+  sortByKey = true
+  // Referenced that are pinned are not automatically updated.
+  // They are also not automatically kept however (use keep for that).
+  pin {
+  }
+  keep {
+    keepUnusedVersions = true
+    // keep all libraries that aren't used in the project
+    keepUnusedLibraries = true
+    // keep all plugins that aren't used in the project
+    keepUnusedPlugins = true
+  }
 }
 
 tasks.withType<DependencyUpdatesTask> {
-    rejectVersionIf {
-        !isPatch(candidate.version, currentVersion)
-    }
+  rejectVersionIf {
+    !isPatch(candidate.version, currentVersion)
+  }
 }
 
 fun isPatch(candidateVersion: String, currentVersion: String): Boolean {
-    val candidateSplit = candidateVersion.split(".")
-    val currentSplit = currentVersion.split(".")
+  val candidateSplit = candidateVersion.split(".")
+  val currentSplit = currentVersion.split(".")
 
-    if (candidateSplit.size == currentSplit.size && currentSplit.size == 3) {
-        if (candidateSplit[0] != currentSplit[0]) {
-            return false
-        }
-        if (candidateSplit[1] != currentSplit[1]) {
-            return false
-        }
+  if (candidateSplit.size == currentSplit.size && currentSplit.size == 3) {
+    if (candidateSplit[0] != currentSplit[0]) {
+      return false
     }
-    return true
+    if (candidateSplit[1] != currentSplit[1]) {
+      return false
+    }
+  }
+  return true
 }
