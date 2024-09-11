@@ -138,14 +138,6 @@ tasks.register("copyJavadocsToBucket") {
   }
 }
 
-tasks.register("publishToInternalGCS") {
-  group = "publishing"
-  description = "Publishes all Maven publications to internal GCS repository."
-  dependsOn(tasks.withType<PublishToMavenRepository>().matching {
-    it.repository == publishing.repositories["GCS"]
-  })
-}
-
 versionCatalogUpdate {
   // These options will be set as default for all version catalogs
   sortByKey = true
