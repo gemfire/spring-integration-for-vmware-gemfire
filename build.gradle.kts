@@ -129,6 +129,21 @@ private fun getBaseVersion(version: String): String {
   return "${split[0]}.${split[1]}"
 }
 
+tasks.getByName<Test>("test") {
+  forkEvery = 1
+  maxParallelForks = 4
+  val springTestGemfireDockerImage: String by project
+  systemProperty("spring.test.gemfire.docker.image", springTestGemfireDockerImage)
+}
+
+tasks.register("publishToInternalGCS") {
+  group = "publishing"
+  description = "Publishes all Maven publications to internal GCS repository."
+  dependsOn(tasks.withType<PublishToMavenRepository>().matching {
+    it.repository == publishing.repositories["GCS"]
+  })
+}
+
 tasks.register("copyJavadocsToBucket") {
   val javadocJarTask = tasks.named("javadocJar")
   dependsOn(javadocJarTask)
