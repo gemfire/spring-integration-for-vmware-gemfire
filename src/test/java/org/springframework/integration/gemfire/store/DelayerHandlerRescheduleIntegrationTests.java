@@ -5,11 +5,6 @@
 
 package org.springframework.integration.gemfire.store;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
-
-import java.util.concurrent.TimeUnit;
-
 import org.apache.geode.cache.Cache;
 import org.apache.geode.cache.Region;
 import org.apache.geode.cache.Scope;
@@ -17,10 +12,9 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
-
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.data.gemfire.CacheFactoryBean;
+import org.springframework.data.gemfire.client.ClientCacheFactoryBean;
 import org.springframework.integration.context.IntegrationContextUtils;
 import org.springframework.integration.handler.DelayHandler;
 import org.springframework.integration.store.MessageGroup;
@@ -31,6 +25,11 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.PollableChannel;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+
+import java.util.concurrent.TimeUnit;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 
 /**
@@ -45,14 +44,14 @@ public class DelayerHandlerRescheduleIntegrationTests {
 
 	public static Region<Object, Object> region;
 
-	private static CacheFactoryBean cacheFactoryBean;
+	private static ClientCacheFactoryBean cacheFactoryBean;
 
 	@ClassRule
 	public static LongRunningIntegrationTest longTests = new LongRunningIntegrationTest();
 
 	@BeforeClass
 	public static void startUp() throws Exception {
-		cacheFactoryBean = new CacheFactoryBean();
+		cacheFactoryBean = new ClientCacheFactoryBean();
 		cacheFactoryBean.afterPropertiesSet();
 		Cache cache = (Cache) cacheFactoryBean.getObject();
 		region = cache.createRegionFactory().setScope(Scope.LOCAL).create("sig-tests");

@@ -5,22 +5,18 @@
 
 package org.springframework.integration.gemfire.store;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-
 import org.apache.geode.cache.Cache;
 import org.apache.geode.cache.Region;
 import org.apache.geode.cache.Scope;
+import org.apache.geode.cache.client.ClientCache;
+import org.apache.geode.cache.client.ClientRegionShortcut;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import org.springframework.data.gemfire.CacheFactoryBean;
-import org.springframework.data.gemfire.GenericRegionFactoryBean;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.data.gemfire.client.ClientCacheFactoryBean;
+import org.springframework.data.gemfire.client.ClientRegionFactoryBean;
 import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.history.MessageHistory;
 import org.springframework.integration.store.MessageGroup;
@@ -29,6 +25,13 @@ import org.springframework.integration.support.MessageBuilder;
 import org.springframework.integration.test.util.TestUtils;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.GenericMessage;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * @author Mark Fisher
@@ -40,7 +43,7 @@ import org.springframework.messaging.support.GenericMessage;
  */
 public class GemfireMessageStoreTests {
 
-	private static CacheFactoryBean cacheFactoryBean;
+	private static ClientCacheFactoryBean cacheFactoryBean;
 
 	private static Region<Object, Object> region;
 
@@ -55,7 +58,8 @@ public class GemfireMessageStoreTests {
 
 	@Test
 	public void testRegionConstructor() throws Exception {
-		GenericRegionFactoryBean<Object, Object> region = new GenericRegionFactoryBean<>();
+		ClientRegionFactoryBean<Object, Object> region = new ClientRegionFactoryBean<>();
+		region.setBeanFactory(mock(BeanFactory.class));
 		region.setName("someRegion");
 		region.setCache(cacheFactoryBean.getObject());
 		region.afterPropertiesSet();
@@ -138,9 +142,10 @@ public class GemfireMessageStoreTests {
 
 	@BeforeClass
 	public static void init() throws Exception {
-		cacheFactoryBean = new CacheFactoryBean();
-		Cache cache = (Cache) cacheFactoryBean.getObject();
-		region = cache.createRegionFactory().setScope(Scope.LOCAL).create("sig-tests");
+		cacheFactoryBean = new ClientCacheFactoryBean();
+		cacheFactoryBean.setBeanFactory(mock(BeanFactory.class));
+		ClientCache cache = (ClientCache) cacheFactoryBean.getObject();
+		region = cache.createClientRegionFactory(ClientRegionShortcut.LOCAL).create("sig-tests");
 	}
 
 	@AfterClass
