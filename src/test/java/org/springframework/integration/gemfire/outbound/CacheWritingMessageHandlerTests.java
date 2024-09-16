@@ -5,29 +5,30 @@
 
 package org.springframework.integration.gemfire.outbound;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.geode.cache.Cache;
 import org.apache.geode.cache.Region;
 import org.apache.geode.cache.Scope;
+import org.apache.geode.cache.client.ClientCache;
+import org.apache.geode.cache.client.ClientRegionShortcut;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.data.gemfire.CacheFactoryBean;
+import org.springframework.data.gemfire.client.ClientCacheFactoryBean;
 import org.springframework.expression.Expression;
 import org.springframework.expression.common.LiteralExpression;
 import org.springframework.integration.expression.ValueExpression;
 import org.springframework.integration.support.MessageBuilder;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.GenericMessage;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * @author Mark Fisher
@@ -39,16 +40,17 @@ import org.springframework.messaging.support.GenericMessage;
  */
 public class CacheWritingMessageHandlerTests {
 
-	private static CacheFactoryBean cacheFactoryBean;
+	private static ClientCacheFactoryBean cacheFactoryBean;
 
 	private static Region<Object, Object> region;
 
 	@BeforeClass
 	public static void startUp() throws Exception {
-		cacheFactoryBean = new CacheFactoryBean();
+		cacheFactoryBean = new ClientCacheFactoryBean();
+		cacheFactoryBean.setBeanFactory(mock(BeanFactory.class));
 		cacheFactoryBean.afterPropertiesSet();
-		Cache cache = (Cache) cacheFactoryBean.getObject();
-		region = cache.createRegionFactory().setScope(Scope.LOCAL).create("sig-tests");
+		ClientCache cache = (ClientCache) cacheFactoryBean.getObject();
+		region = cache.createClientRegionFactory(ClientRegionShortcut.LOCAL).create("sig-tests");
 	}
 
 	@AfterClass
