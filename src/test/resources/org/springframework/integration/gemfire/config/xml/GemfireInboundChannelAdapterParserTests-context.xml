@@ -13,7 +13,7 @@
 		https://www.springframework.org/schema/beans/spring-beans.xsd">
 
 	<bean id="region" class="org.mockito.Mockito" factory-method="mock">
-		<constructor-arg value="org.apache.geode.cache.Region"/>
+		<constructor-arg type="java.lang.Class" value="org.apache.geode.cache.Region"/>
 	</bean>
 
 	<int-gfe:inbound-channel-adapter id="channel1"
