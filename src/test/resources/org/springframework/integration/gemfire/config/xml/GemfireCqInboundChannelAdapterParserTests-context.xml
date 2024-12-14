@@ -28,7 +28,7 @@
 	</util:properties>
 
 	<bean id="queryListenerContainer" class="org.mockito.Mockito" factory-method="mock">
-		<constructor-arg value="org.springframework.data.gemfire.listener.ContinuousQueryListenerContainer"/>
+		<constructor-arg type="java.lang.Class" value="org.springframework.data.gemfire.listener.ContinuousQueryListenerContainer"/>
 	</bean>
 
 	<int-gfe:cq-inbound-channel-adapter id="withDurable"

@@ -1,12 +1,12 @@
 [versions]
-springTest = "6.1.6"
-commonsIO = "2.15.1"
-junitBom = "5.10.2"
-logback = "1.4.14"
-log4jOverSlf4j = "2.0.13"
-mockito = { require = "3.12.4" }
-assertJCore = "3.24.2"
-gemfireTestcontainers = "2.3.0"
+springTest = "6.2.0"
+commonsIO = "2.18.0"
+junitBom = "5.11.3"
+logback = "1.5.12"
+log4jOverSlf4j = "2.0.16"
+mockito = { require = "5.14.2" }
+assertJCore = "3.26.3"
+gemfireTestcontainers = "2.3.1"
 benManesVersions="0.50.0"
 littlerobotsVersionCatalogUpdate="0.8.4"
 
@@ -22,7 +22,7 @@ logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "lo
 log4j-over-slf4j = { module = "org.slf4j:log4j-over-slf4j", version.ref = "log4jOverSlf4j" }
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junitBom" }
 spring-integration-bom = { module = "org.springframework.integration:spring-integration-bom", version.ref = "springIntegrationVersion" }
-spring-data-gemfire = { module = "com.vmware.gemfire:spring-data-3.3-gemfire-10.2", version.ref = "springDataGemFireVersion" }
+spring-data-gemfire = { module = "com.vmware.gemfire:spring-data-3.4-gemfire-10.2", version.ref = "springDataGemFireVersion" }
 
 
 [plugins]
