@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 Broadcom. All rights reserved.
+ * Copyright 2023-2025 Broadcom. All rights reserved.
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -50,10 +50,10 @@ publishing {
       }
       repositories {
         maven {
-          val mavenPushRepository : String by project
-          if (mavenPushRepository != null) {
-            url = uri(mavenPushRepository)
-            if (mavenPushRepository.toString().startsWith("gcs:")) {
+          val mavenPushRepositoryURL = project.findProperty("mavenPushRepository")
+          if (mavenPushRepositoryURL != null) {
+            url = uri(mavenPushRepositoryURL)
+            if (mavenPushRepositoryURL.toString().startsWith("gcs:")) {
               name = "GCS"
             }
             setGemFirePublishingCredentials(this)
