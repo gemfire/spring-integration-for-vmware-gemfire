@@ -1,12 +1,14 @@
 /*
- * Copyright 2023-2024 Broadcom. All rights reserved.
+ * Copyright 2023-2025 Broadcom. All rights reserved.
  * SPDX-License-Identifier: Apache-2.0
  */
 
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+import com.google.auth.oauth2.GoogleCredentials
 import com.google.cloud.storage.BlobId
 import com.google.cloud.storage.BlobInfo
 import com.google.cloud.storage.StorageOptions
+import java.io.FileInputStream
 
 buildscript {
   dependencies {
@@ -126,8 +128,9 @@ tasks.register("copyJavadocsToBucket") {
   val javadocJarTask = tasks.named("javadocJar")
   dependsOn(javadocJarTask)
   doLast {
-    val storage = StorageOptions.newBuilder().setProjectId(project.properties["docsGCSProject"].toString())
-      .build().getService()
+      val storage =
+          StorageOptions.newBuilder().setProjectId(project.properties["docsGCSProject"].toString()).setCredentials(
+              GoogleCredentials.fromStream(FileInputStream(project.properties["docsGCSProjectCredentials"].toString()))).build().getService()
     val javadocJarFiles = javadocJarTask.get().outputs.files
     val blobId = BlobId.of(
       project.properties["docsGCSBucket"].toString(),
