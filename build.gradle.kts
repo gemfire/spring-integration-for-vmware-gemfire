@@ -40,7 +40,7 @@ tasks.named<Javadoc>("javadoc") {
 }
 
 publishingDetails {
-  artifactName.set("spring-integration-6.1-gemfire-${getGemFireBaseVersion()}")
+  artifactName.set("spring-integration-6.5-gemfire-${getGemFireBaseVersion()}")
   longName.set("Spring Integration for VMware GemFire")
   description.set("Spring Integration For VMware GemFire")
 }
