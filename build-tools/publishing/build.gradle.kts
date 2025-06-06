@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 Broadcom. All rights reserved.
+ * Copyright 2022-2025 Broadcom. All rights reserved.
  * SPDX-License-Identifier: Apache-2.0
  */
 plugins {
@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.21")
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.21")
     implementation("org.nosphere.apache:creadur-rat-gradle:0.7.1")
     implementation("com.github.ben-manes:gradle-versions-plugin:0.42.0")
     implementation("org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.3")
