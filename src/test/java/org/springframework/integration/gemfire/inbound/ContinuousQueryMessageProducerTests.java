@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 Broadcom. All rights reserved.
+ * Copyright 2023-2025 Broadcom. All rights reserved.
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -7,6 +7,7 @@ package org.springframework.integration.gemfire.inbound;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import org.apache.geode.cache.Operation;
 import org.apache.geode.cache.query.CqEvent;
@@ -16,9 +17,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.gemfire.listener.ContinuousQueryListenerContainer;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.integration.channel.DirectChannel;
+import org.springframework.integration.config.IntegrationEvaluationContextFactoryBean;
+import org.springframework.integration.context.IntegrationContextUtils;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHandler;
 import org.springframework.messaging.MessagingException;
@@ -37,8 +42,23 @@ public class ContinuousQueryMessageProducerTests {
 
 	private CqMessageHandler handler;
 
+  private static BeanFactory mockBeanFactory;
+
 	@BeforeEach
 	void setUp() {
+    mockBeanFactory = mock(BeanFactory.class);
+    when(mockBeanFactory.containsBean(IntegrationContextUtils.INTEGRATION_EVALUATION_CONTEXT_BEAN_NAME)).thenReturn(true);
+    ApplicationContext context = mock(ApplicationContext.class);
+    IntegrationEvaluationContextFactoryBean integrationEvaluationContextFactoryBean =
+        new IntegrationEvaluationContextFactoryBean();
+    integrationEvaluationContextFactoryBean.setApplicationContext(context);
+    integrationEvaluationContextFactoryBean.afterPropertiesSet();
+    StandardEvaluationContext evalContext = integrationEvaluationContextFactoryBean.getObject();
+    when(context.getBean(IntegrationContextUtils.INTEGRATION_EVALUATION_CONTEXT_BEAN_NAME,
+        StandardEvaluationContext.class))
+        .thenReturn(evalContext);
+    when(mockBeanFactory.getBean(IntegrationContextUtils.INTEGRATION_EVALUATION_CONTEXT_BEAN_NAME,
+        StandardEvaluationContext.class)).thenReturn(evalContext);
 		ContinuousQueryListenerContainer queryListenerContainer = mock(ContinuousQueryListenerContainer.class);
 		this.cqMessageProducer = new ContinuousQueryMessageProducer(queryListenerContainer, "foo");
 		DirectChannel outputChannel = new DirectChannel();
@@ -76,6 +96,7 @@ public class ContinuousQueryMessageProducerTests {
 	void testPayloadExpression() {
 		CqEvent cqEvent = event(Operation.CREATE, "hello");
 		this.cqMessageProducer.setPayloadExpression(PARSER.parseExpression("newValue.toUpperCase() + ', WORLD'"));
+    this.cqMessageProducer.setBeanFactory(mockBeanFactory);
 		this.cqMessageProducer.afterPropertiesSet();
 		this.cqMessageProducer.onEvent(cqEvent);
 		assertThat(this.handler.count).isEqualTo(1);

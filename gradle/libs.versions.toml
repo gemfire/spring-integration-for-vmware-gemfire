@@ -1,5 +1,5 @@
 [versions]
-springTest = "6.2.0"
+springTest = "7.0.0-M7"
 commonsIO = "2.18.0"
 junitBom = "5.11.4"
 logback = "1.5.18"
@@ -22,7 +22,7 @@ logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "lo
 log4j-over-slf4j = { module = "org.slf4j:log4j-over-slf4j", version.ref = "log4jOverSlf4j" }
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junitBom" }
 spring-integration-bom = { module = "org.springframework.integration:spring-integration-bom", version.ref = "springIntegrationVersion" }
-spring-data-gemfire = { module = "com.vmware.gemfire:spring-data-3.5-gemfire-10.2", version.ref = "springDataGemFireVersion" }
+spring-data-gemfire = { module = "com.vmware.gemfire:spring-data-4.0-gemfire-10.2", version.ref ="springDataGemFireVersion" }
 
 
 [plugins]

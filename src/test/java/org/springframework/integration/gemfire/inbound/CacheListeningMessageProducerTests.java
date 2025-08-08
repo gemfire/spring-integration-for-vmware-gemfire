@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 Broadcom. All rights reserved.
+ * Copyright 2023-2025 Broadcom. All rights reserved.
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -17,6 +17,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.gemfire.RegionAttributesFactoryBean;
 import org.springframework.data.gemfire.client.ClientCacheFactoryBean;
 import org.springframework.data.gemfire.client.ClientRegionFactoryBean;
@@ -24,13 +25,19 @@ import org.springframework.data.gemfire.client.PoolFactoryBean;
 import org.springframework.data.gemfire.config.annotation.ClientCacheApplication;
 import org.springframework.data.gemfire.support.ConnectionEndpoint;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.integration.channel.QueueChannel;
+import org.springframework.integration.config.IntegrationEvaluationContextFactoryBean;
+import org.springframework.integration.context.IntegrationContextUtils;
 import org.springframework.messaging.Message;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Mark Fisher
@@ -47,9 +54,24 @@ public class CacheListeningMessageProducerTests {
   private static ClientRegionFactoryBean<String, String> regionFactoryBean;
 
   private static Region<String, String> region;
+  private static BeanFactory mockBeanFactory;
 
   @BeforeClass
   public static void setup() throws Exception {
+    mockBeanFactory = mock(BeanFactory.class);
+    when(mockBeanFactory.containsBean(anyString())).thenReturn(true);
+    ApplicationContext context = mock(ApplicationContext.class);
+    IntegrationEvaluationContextFactoryBean integrationEvaluationContextFactoryBean =
+        new IntegrationEvaluationContextFactoryBean();
+    integrationEvaluationContextFactoryBean.setApplicationContext(context);
+    integrationEvaluationContextFactoryBean.afterPropertiesSet();
+    StandardEvaluationContext evalContext = integrationEvaluationContextFactoryBean.getObject();
+    when(context.getBean(IntegrationContextUtils.INTEGRATION_EVALUATION_CONTEXT_BEAN_NAME,
+        StandardEvaluationContext.class))
+        .thenReturn(evalContext);
+    when(mockBeanFactory.getBean(IntegrationContextUtils.INTEGRATION_EVALUATION_CONTEXT_BEAN_NAME,
+        StandardEvaluationContext.class)).thenReturn(evalContext);
+
     cacheFactoryBean = new ClientCacheFactoryBean();
     cacheFactoryBean.setBeanFactory(mock(BeanFactory.class));
 
@@ -77,7 +99,7 @@ public class CacheListeningMessageProducerTests {
     CacheListeningMessageProducer producer = new CacheListeningMessageProducer(region);
     producer.setPayloadExpression(PARSER.parseExpression("key + '=' + newValue"));
     producer.setOutputChannel(channel);
-    producer.setBeanFactory(mock(BeanFactory.class));
+    producer.setBeanFactory(mockBeanFactory);
     producer.afterPropertiesSet();
     producer.start();
 
@@ -91,12 +113,12 @@ public class CacheListeningMessageProducerTests {
   }
 
   @Test
-  public void receiveNewValuePayloadForUpdateEvent() {
+  public void receiveNewValuePayloadForUpdateEvent(){
     QueueChannel channel = new QueueChannel();
     CacheListeningMessageProducer producer = new CacheListeningMessageProducer(region);
     producer.setPayloadExpression(PARSER.parseExpression("newValue"));
     producer.setOutputChannel(channel);
-    producer.setBeanFactory(mock(BeanFactory.class));
+    producer.setBeanFactory(mockBeanFactory);
     producer.afterPropertiesSet();
     producer.start();
 
@@ -120,7 +142,7 @@ public class CacheListeningMessageProducerTests {
     producer.setSupportedEventTypes(EventType.DESTROYED);
     producer.setPayloadExpression(PARSER.parseExpression("oldValue"));
     producer.setOutputChannel(channel);
-    producer.setBeanFactory(mock(BeanFactory.class));
+    producer.setBeanFactory(mockBeanFactory);
     producer.afterPropertiesSet();
     producer.start();
 
@@ -142,7 +164,7 @@ public class CacheListeningMessageProducerTests {
     producer.setSupportedEventTypes(EventType.INVALIDATED);
     producer.setPayloadExpression(PARSER.parseExpression("key + ' was ' + oldValue"));
     producer.setOutputChannel(channel);
-    producer.setBeanFactory(mock(BeanFactory.class));
+    producer.setBeanFactory(mockBeanFactory);
     producer.afterPropertiesSet();
     producer.start();
 

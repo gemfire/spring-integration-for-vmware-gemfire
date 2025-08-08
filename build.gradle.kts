@@ -26,11 +26,12 @@ plugins {
 
 java {
   toolchain { languageVersion = JavaLanguageVersion.of(17) }
-}
-
-java {
   withJavadocJar()
   withSourcesJar()
+}
+
+tasks.withType<Test> {
+  useJUnitPlatform()
 }
 
 tasks.named<Javadoc>("javadoc") {
@@ -40,7 +41,7 @@ tasks.named<Javadoc>("javadoc") {
 }
 
 publishingDetails {
-  artifactName.set("spring-integration-6.5-gemfire-${getGemFireBaseVersion()}")
+  artifactName.set("spring-integration-7.0-gemfire-${getGemFireBaseVersion()}")
   longName.set("Spring Integration for VMware GemFire")
   description.set("Spring Integration For VMware GemFire")
 }
@@ -85,6 +86,7 @@ dependencies {
   testImplementation(libs.log4j.over.slf4j)
   testImplementation(libs.logback.classic)
   testImplementation(libs.gemfire.testcontainers)
+  testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 tasks.all {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 Broadcom. All rights reserved.
+ * Copyright 2023-2025 Broadcom. All rights reserved.
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -15,9 +15,13 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.gemfire.client.ClientCacheFactoryBean;
 import org.springframework.expression.Expression;
 import org.springframework.expression.common.LiteralExpression;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.springframework.integration.config.IntegrationEvaluationContextFactoryBean;
+import org.springframework.integration.context.IntegrationContextUtils;
 import org.springframework.integration.expression.ValueExpression;
 import org.springframework.integration.support.MessageBuilder;
 import org.springframework.messaging.Message;
@@ -28,7 +32,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Mark Fisher
@@ -44,10 +50,26 @@ public class CacheWritingMessageHandlerTests {
 
 	private static Region<Object, Object> region;
 
+  private static BeanFactory mockBeanFactory;
+
 	@BeforeClass
 	public static void startUp() throws Exception {
+    mockBeanFactory = mock(BeanFactory.class);
+    when(mockBeanFactory.containsBean(IntegrationContextUtils.INTEGRATION_EVALUATION_CONTEXT_BEAN_NAME)).thenReturn(true);
+    ApplicationContext context = mock(ApplicationContext.class);
+    IntegrationEvaluationContextFactoryBean integrationEvaluationContextFactoryBean =
+        new IntegrationEvaluationContextFactoryBean();
+    integrationEvaluationContextFactoryBean.setApplicationContext(context);
+    integrationEvaluationContextFactoryBean.afterPropertiesSet();
+    StandardEvaluationContext evalContext = integrationEvaluationContextFactoryBean.getObject();
+    when(context.getBean(IntegrationContextUtils.INTEGRATION_EVALUATION_CONTEXT_BEAN_NAME,
+        StandardEvaluationContext.class))
+        .thenReturn(evalContext);
+    when(mockBeanFactory.getBean(IntegrationContextUtils.INTEGRATION_EVALUATION_CONTEXT_BEAN_NAME,
+        StandardEvaluationContext.class)).thenReturn(evalContext);
+
 		cacheFactoryBean = new ClientCacheFactoryBean();
-		cacheFactoryBean.setBeanFactory(mock(BeanFactory.class));
+		cacheFactoryBean.setBeanFactory(mockBeanFactory);
 		cacheFactoryBean.afterPropertiesSet();
 		ClientCache cache = (ClientCache) cacheFactoryBean.getObject();
 		region = cache.createClientRegionFactory(ClientRegionShortcut.LOCAL).create("sig-tests");
@@ -76,7 +98,7 @@ public class CacheWritingMessageHandlerTests {
 		assertThat(region.size()).isEqualTo(0);
 
 		CacheWritingMessageHandler handler = new CacheWritingMessageHandler(region);
-		handler.setBeanFactory(mock(BeanFactory.class));
+		handler.setBeanFactory(mockBeanFactory);
 		handler.afterPropertiesSet();
 
 		Map<String, String> map = new HashMap<String, String>();
@@ -97,7 +119,7 @@ public class CacheWritingMessageHandlerTests {
 		expressions.put("'foo'", "'bar'");
 		expressions.put("payload.toUpperCase()", "headers['bar'].toUpperCase()");
 		handler.setCacheEntries(expressions);
-		handler.setBeanFactory(mock(BeanFactory.class));
+		handler.setBeanFactory(mockBeanFactory);
 		handler.afterPropertiesSet();
 
 		Message<?> message = MessageBuilder.withPayload("foo")
