@@ -1,13 +1,11 @@
 /*
- * Copyright 2023-2024 Broadcom. All rights reserved.
+ * Copyright 2023-2026 Broadcom. All rights reserved.
  * SPDX-License-Identifier: Apache-2.0
  */
 
 package org.springframework.integration.gemfire.store;
 
-import org.apache.geode.cache.Cache;
 import org.apache.geode.cache.Region;
-import org.apache.geode.cache.Scope;
 import org.apache.geode.cache.client.ClientCache;
 import org.apache.geode.cache.client.ClientRegionShortcut;
 import org.junit.AfterClass;
@@ -65,7 +63,7 @@ public class GemfireMessageStoreTests {
 		region.afterPropertiesSet();
 
 		GemfireMessageStore store = new GemfireMessageStore(region.getObject());
-		assertThat(TestUtils.getPropertyValue(store, "messageStoreRegion")).isSameAs(region.getObject());
+		assertThat((Object) TestUtils.getPropertyValue(store, "messageStoreRegion")).isSameAs(region.getObject());
 
 		region.destroy();
 	}
