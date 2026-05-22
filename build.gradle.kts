@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 Broadcom. All rights reserved.
+ * Copyright 2023-2026 Broadcom. All rights reserved.
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -11,6 +11,31 @@ import com.google.cloud.storage.StorageOptions
 import java.io.FileInputStream
 
 buildscript {
+  repositories {
+    val repositoryConfigFilePath = providers.gradleProperty("spring.gemfire.repositories").getOrElse(
+      providers.environmentVariable("HOME").get() + "/.gradle/gradleRepositories.json"
+    )
+
+    val jsonString = File(repositoryConfigFilePath).readText(Charsets.UTF_8)
+    val repositories = groovy.json.JsonSlurper().parseText(jsonString) as Map<*, *>
+    (repositories["repositories"] as List<*>).filterNotNull().map { entry -> entry as Map<*, *> }
+      .forEach { entry ->
+        entry.apply {
+          maven {
+            url = uri(entry["url"]!! as String)
+            if (!entry["username"]?.toString().isNullOrBlank()) {
+              credentials {
+                username = entry["username"] as String
+                password = entry["password"] as String
+              }
+            }
+          }
+        }
+      }
+    if (providers.gradleProperty("useMavenCentral").getOrElse("false").toBoolean()) {
+      mavenCentral()
+    }
+  }
   dependencies {
     classpath("com.google.cloud:google-cloud-storage:2.30.2")
   }
@@ -36,12 +61,15 @@ tasks.withType<Test> {
 
 tasks.named<Javadoc>("javadoc") {
   title =
-    "Spring Integration ${getSpringIntegrationBaseVersion()} for VMware GemFire ${getGemFireBaseVersion()} Java API Reference"
+    "Spring Integration ${baseSpringIntegrationVersion} for VMware GemFire ${baseGemFireVersion} Java API Reference"
   isFailOnError = false
 }
 
+val baseGemFireVersion: String by project
+val baseSpringIntegrationVersion: String by project
+
 publishingDetails {
-  artifactName.set("spring-integration-7.0-gemfire-${getGemFireBaseVersion()}")
+  artifactName.set("spring-integration-${baseSpringIntegrationVersion}-gemfire-${baseGemFireVersion}")
   longName.set("Spring Integration for VMware GemFire")
   description.set("Spring Integration For VMware GemFire")
 }
@@ -106,7 +134,29 @@ tasks {
 }
 
 repositories {
-  mavenCentral()
+  val repositoryConfigFilePath = providers.gradleProperty("spring.gemfire.repositories").getOrElse(
+    providers.environmentVariable("HOME").get() + "/.gradle/gradleRepositories.json"
+  )
+
+  val jsonString = File(repositoryConfigFilePath).readText(Charsets.UTF_8)
+  val repositories = groovy.json.JsonSlurper().parseText(jsonString) as Map<*, *>
+  (repositories["repositories"] as List<*>).filterNotNull().map { entry -> entry as Map<*, *> }
+    .forEach { entry ->
+      entry.apply {
+        maven {
+          url = uri(entry["url"]!! as String)
+          if (!entry["username"]?.toString().isNullOrBlank()) {
+            credentials {
+              username = entry["username"] as String
+              password = entry["password"] as String
+            }
+          }
+        }
+      }
+    }
+  if (providers.gradleProperty("useMavenCentral").getOrElse("false").toBoolean()) {
+    mavenCentral()
+  }
   val additionalMavenRepoURLs = project.findProperty("additionalMavenRepoURLs").toString()
   if (!additionalMavenRepoURLs.isNullOrBlank() && additionalMavenRepoURLs.isNotEmpty()) {
     additionalMavenRepoURLs.split(",").forEach {
@@ -115,22 +165,6 @@ repositories {
       }
     }
   }
-}
-
-private fun getSpringIntegrationBaseVersion(): String {
-  return getBaseVersion(property("springIntegrationVersion").toString())
-}
-
-private fun getGemFireBaseVersion(): String {
-  return getBaseVersion(property("gemfireVersion").toString())
-}
-
-private fun getBaseVersion(version: String): String {
-  val split = version.split(".")
-  if (split.size < 2) {
-    throw RuntimeException("version is malformed")
-  }
-  return "${split[0]}.${split[1]}"
 }
 
 tasks.getByName<Test>("test") {
@@ -166,10 +200,6 @@ versionCatalogUpdate {
   }
   keep {
     keepUnusedVersions = true
-    // keep all libraries that aren't used in the project
-    keepUnusedLibraries = true
-    // keep all plugins that aren't used in the project
-    keepUnusedPlugins = true
   }
 }
 

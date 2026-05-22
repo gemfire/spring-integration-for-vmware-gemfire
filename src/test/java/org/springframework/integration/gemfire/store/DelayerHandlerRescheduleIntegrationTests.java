@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 Broadcom. All rights reserved.
+ * Copyright 2023-2026 Broadcom. All rights reserved.
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -8,10 +8,9 @@ package org.springframework.integration.gemfire.store;
 import org.apache.geode.cache.Cache;
 import org.apache.geode.cache.Region;
 import org.apache.geode.cache.Scope;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.data.gemfire.client.ClientCacheFactoryBean;
@@ -20,7 +19,7 @@ import org.springframework.integration.handler.DelayHandler;
 import org.springframework.integration.store.MessageGroup;
 import org.springframework.integration.store.MessageGroupStore;
 import org.springframework.integration.support.MessageBuilder;
-import org.springframework.integration.test.support.LongRunningIntegrationTest;
+import org.springframework.integration.test.condition.LongRunningTest;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.PollableChannel;
@@ -38,6 +37,7 @@ import static org.assertj.core.api.Assertions.fail;
  *
  * @since 3.0
  */
+@LongRunningTest
 public class DelayerHandlerRescheduleIntegrationTests {
 
 	public static final String DELAYER_ID = "delayerWithGemfireMS";
@@ -46,10 +46,7 @@ public class DelayerHandlerRescheduleIntegrationTests {
 
 	private static ClientCacheFactoryBean cacheFactoryBean;
 
-	@ClassRule
-	public static LongRunningIntegrationTest longTests = new LongRunningIntegrationTest();
-
-	@BeforeClass
+	@BeforeAll
 	public static void startUp() throws Exception {
 		cacheFactoryBean = new ClientCacheFactoryBean();
 		cacheFactoryBean.afterPropertiesSet();
@@ -57,7 +54,7 @@ public class DelayerHandlerRescheduleIntegrationTests {
 		region = cache.createRegionFactory().setScope(Scope.LOCAL).create("sig-tests");
 	}
 
-	@AfterClass
+	@AfterAll
 	public static void cleanUp() throws Exception {
 		if (region != null) {
 			region.close();

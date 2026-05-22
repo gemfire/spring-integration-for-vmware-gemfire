@@ -1,30 +1,32 @@
 [versions]
-springTest = "7.0.0-M9"
-commonsIO = "2.18.0"
-junitBom = "5.11.4"
-logback = "1.5.18"
-log4jOverSlf4j = "2.0.17"
-mockito = { require = "5.14.2" }
-assertJCore = "3.26.3"
+assertJCore = "3.27.7"
+benManesVersions = "0.54.0"
+commonsIO = "2.22.0"
 gemfireTestcontainers = "3.0.0"
-benManesVersions="0.50.0"
-littlerobotsVersionCatalogUpdate="0.8.5"
+gemfireVersion = "10.3.0"
+junitBom = "6.1.0"
+littlerobotsVersionCatalogUpdate = "1.1.0"
+log4jOverSlf4j = "2.0.18"
+logback = "1.5.32"
+mockito = { require = "5.14.2" }
+springDataGemFireVersion = "2.0.0"
+springIntegrationVersion = "7.1.0-RC1"
+springTest = "7.0.7.1"
 
 [libraries]
+assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertJCore" }
+commons-io = { module = "commons-io:commons-io", version.ref = "commonsIO" }
 gemfire-core = { module = "com.vmware.gemfire:gemfire-core", version.ref = "gemfireVersion" }
 gemfire-cq = { module = "com.vmware.gemfire:gemfire-cq", version.ref = "gemfireVersion" }
 gemfire-testcontainers = { module = "dev.gemfire:gemfire-testcontainers", version.ref = "gemfireTestcontainers" }
-commons-io = { module = "commons-io:commons-io", version.ref = "commonsIO" }
-assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertJCore" }
-spring-test = { module = "org.springframework:spring-test", version.ref = "springTest" }
-mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
-logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
-log4j-over-slf4j = { module = "org.slf4j:log4j-over-slf4j", version.ref = "log4jOverSlf4j" }
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junitBom" }
+log4j-over-slf4j = { module = "org.slf4j:log4j-over-slf4j", version.ref = "log4jOverSlf4j" }
+logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
+spring-data-gemfire = { module = "com.vmware.gemfire:spring-data-4.0-gemfire-10.3", version.ref = "springDataGemFireVersion" }
 spring-integration-bom = { module = "org.springframework.integration:spring-integration-bom", version.ref = "springIntegrationVersion" }
-spring-data-gemfire = { module = "com.vmware.gemfire:spring-data-4.0-gemfire-10.3", version.ref ="springDataGemFireVersion" }
-
+spring-test = { module = "org.springframework:spring-test", version.ref = "springTest" }
 
 [plugins]
-ben-manes-versions={id="com.github.ben-manes.versions", version.ref="benManesVersions"}
-littlerobots-version-catalog-update={id="nl.littlerobots.version-catalog-update", version.ref="littlerobotsVersionCatalogUpdate"}
+ben-manes-versions = { id = "com.github.ben-manes.versions", version.ref = "benManesVersions" }
+littlerobots-version-catalog-update = { id = "nl.littlerobots.version-catalog-update", version.ref = "littlerobotsVersionCatalogUpdate" }
