@@ -1,9 +1,8 @@
 /*
- * Copyright 2023-2026 Broadcom. All rights reserved.
+ * Copyright $originalComment.match("Copyright \(c\) VMware, Inc. (\d+)", 1, "-", $today.year)$originalComment.match("Copyright (\d+)", 1, "-", $today.year)2026 Broadcom. All rights reserved.
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import nl.littlerobots.vcu.plugin.versionSelector
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.cloud.storage.BlobId
@@ -41,11 +40,10 @@ buildscript {
     classpath("com.google.cloud:google-cloud-storage:2.30.2")
   }
 }
+
 plugins {
   id("java-library")
   id("gemfire-repo-artifact-publishing")
-  id("commercial-repositories")
-  alias(libs.plugins.ben.manes.versions)
   alias(libs.plugins.littlerobots.version.catalog.update)
   id("gemfire-artifactory")
 }
@@ -60,16 +58,16 @@ java {
 }
 
 val baseGemFireVersion: String by project
-val baseSpringIntegrationVersion: String by project
+val baseSpringVersion: String by project
 
 tasks.named<Javadoc>("javadoc") {
   title =
-    "Spring Integration ${baseSpringIntegrationVersion} for VMware GemFire ${baseGemFireVersion} Java API Reference"
+    "Spring Integration ${baseSpringVersion} for VMware GemFire ${baseGemFireVersion} Java API Reference"
   isFailOnError = false
 }
 
 publishingDetails {
-  artifactName.set("spring-integration-${baseSpringIntegrationVersion}-gemfire-${baseGemFireVersion}")
+  artifactName.set("spring-integration-${baseSpringVersion}-gemfire-${baseGemFireVersion}")
   longName.set("Spring Integration for VMware GemFire")
   description.set("Spring Integration For VMware GemFire")
 }
@@ -132,40 +130,6 @@ tasks {
   }
 }
 
-repositories {
-  val repositoryConfigFilePath = providers.gradleProperty("spring.gemfire.repositories").getOrElse(
-    providers.environmentVariable("HOME").get() + "/.gradle/gradleRepositories.json"
-  )
-
-  val jsonString = File(repositoryConfigFilePath).readText(Charsets.UTF_8)
-  val repositories = groovy.json.JsonSlurper().parseText(jsonString) as Map<*, *>
-  (repositories["repositories"] as List<*>).filterNotNull().map { entry -> entry as Map<*, *> }
-    .forEach { entry ->
-      entry.apply {
-        maven {
-          url = uri(entry["url"]!! as String)
-          if (!entry["username"]?.toString().isNullOrBlank()) {
-            credentials {
-              username = entry["username"] as String
-              password = entry["password"] as String
-            }
-          }
-        }
-      }
-    }
-  if (providers.gradleProperty("useMavenCentral").getOrElse("false").toBoolean()) {
-    mavenCentral()
-  }
-  val additionalMavenRepoURLs = project.findProperty("additionalMavenRepoURLs").toString()
-  if (!additionalMavenRepoURLs.isNullOrBlank() && additionalMavenRepoURLs.isNotEmpty()) {
-    additionalMavenRepoURLs.split(",").forEach {
-      project.repositories.maven {
-        this.url = uri(it)
-      }
-    }
-  }
-}
-
 tasks.getByName<Test>("test") {
   forkEvery = 1
   maxParallelForks = 4
@@ -177,9 +141,9 @@ tasks.register("copyJavadocsToBucket") {
   val javadocJarTask = tasks.named("javadocJar")
   dependsOn(javadocJarTask)
   doLast {
-      val storage =
-          StorageOptions.newBuilder().setProjectId(project.properties["docsGCSProject"].toString()).setCredentials(
-              GoogleCredentials.fromStream(FileInputStream(project.properties["docsGCSProjectCredentials"].toString()))).build().getService()
+    val storage =
+      StorageOptions.newBuilder().setProjectId(project.properties["docsGCSProject"].toString()).setCredentials(
+        GoogleCredentials.fromStream(FileInputStream(project.properties["docsGCSProjectCredentials"].toString()))).build().getService()
     val javadocJarFiles = javadocJarTask.get().outputs.files
     val blobId = BlobId.of(
       project.properties["docsGCSBucket"].toString(),
@@ -191,38 +155,50 @@ tasks.register("copyJavadocsToBucket") {
 }
 
 versionCatalogUpdate {
-  // These options will be set as default for all version catalogs
   sortByKey = true
-  // Referenced that are pinned are not automatically updated.
-  // They are also not automatically kept however (use keep for that).
-  pin {
-  }
   keep {
     keepUnusedVersions = true
   }
-
   versionSelector {
-    isPatch(it.candidate.version, it.currentVersion)
+    val allowMajor = project.hasProperty("updateMajor")
+    val allowMinor = project.hasProperty("updateMinor")
+    isAllowedUpdate(it.candidate.version, it.currentVersion, allowMajor, allowMinor)
+  }
+  versionCatalogs {
+    create("publishCatalog") {
+      catalogFile = file("gradle/publishing.versions.toml")
+    }
   }
 }
 
-tasks.withType<DependencyUpdatesTask> {
-  rejectVersionIf {
-    !isPatch(candidate.version, currentVersion)
-  }
-}
+fun isAllowedUpdate(
+  candidateVersion: String,
+  currentVersion: String,
+  allowMajor: Boolean,
+  allowMinor: Boolean
+): Boolean {
+  val nonStableMarkers = listOf("alpha", "beta", "rc", "snapshot", "dev", "preview", "build", "milestone")
+  if (nonStableMarkers.any { candidateVersion.contains(it, ignoreCase = true) }) return false
+  if (candidateVersion.contains(Regex("""[.\-][Mm]\d"""))) return false
 
-fun isPatch(candidateVersion: String, currentVersion: String): Boolean {
-  val candidateSplit = candidateVersion.split(".")
-  val currentSplit = currentVersion.split(".")
+  val cleanCurrentVersion = if (currentVersion.startsWith("[") || currentVersion.startsWith("(")) {
+    currentVersion.replace("[", "").replace("]", "").replace("(", "").replace(")", "")
+      .split(",").first().trim()
+  } else currentVersion
 
-  if (candidateSplit.size == currentSplit.size && currentSplit.size == 3) {
-    if (candidateSplit[0] != currentSplit[0]) {
-      return false
-    }
-    if (candidateSplit[1] != currentSplit[1]) {
-      return false
-    }
+  if (allowMajor) return true
+
+  fun parseMajorMinor(v: String): Pair<Int, Int>? {
+    val parts = v.split(".")
+    val major = parts.getOrNull(0)?.takeWhile { it.isDigit() }?.toIntOrNull() ?: return null
+    val minor = parts.getOrNull(1)?.takeWhile { it.isDigit() }?.toIntOrNull() ?: return null
+    return major to minor
   }
-  return true
+
+  val (currentMajor, currentMinor) = parseMajorMinor(cleanCurrentVersion) ?: return false
+  val (candidateMajor, candidateMinor) = parseMajorMinor(candidateVersion) ?: return false
+
+  if (currentMajor != candidateMajor) return false
+  if (allowMinor) return true
+  return currentMinor == candidateMinor
 }

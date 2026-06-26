@@ -1,6 +1,5 @@
 [versions]
 assertJCore = "3.26.3"
-benManesVersions = "0.54.0"
 commonsIO = "2.18.0"
 gemfireVersion = "10.1.7"
 gemfireTestcontainers = "3.0.0"
@@ -8,7 +7,7 @@ junitBom = "5.11.4"
 littlerobotsVersionCatalogUpdate = "1.1.0"
 log4jOverSlf4j = "2.0.18"
 logback = "1.5.32"
-mockito = { require = "5.14.2" }
+mockito = "5.14.2"
 springDataGemFireVersion = "2.0.1"
 springIntegrationVersion = "6.5.7"
 springTest = "6.2.16"
@@ -28,5 +27,4 @@ spring-integration-bom = { module = "org.springframework.integration:spring-inte
 spring-test = { module = "org.springframework:spring-test", version.ref = "springTest" }
 
 [plugins]
-ben-manes-versions = { id = "com.github.ben-manes.versions", version.ref = "benManesVersions" }
 littlerobots-version-catalog-update = { id = "nl.littlerobots.version-catalog-update", version.ref = "littlerobotsVersionCatalogUpdate" }
