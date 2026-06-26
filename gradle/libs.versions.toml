@@ -1,16 +1,16 @@
 [versions]
 assertJCore = "3.26.3"
 commonsIO = "2.18.0"
-gemfireVersion = "10.1.7"
 gemfireTestcontainers = "3.0.0"
+gemfireVersion = "10.1.8"
 junitBom = "5.11.4"
 littlerobotsVersionCatalogUpdate = "1.1.0"
 log4jOverSlf4j = "2.0.18"
-logback = "1.5.32"
+logback = "1.5.37"
 mockito = "5.14.2"
 springDataGemFireVersion = "2.0.1"
-springIntegrationVersion = "6.5.7"
-springTest = "6.2.16"
+springIntegrationVersion = "6.5.10"
+springTest = "6.2.19"
 
 [libraries]
 assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertJCore" }
