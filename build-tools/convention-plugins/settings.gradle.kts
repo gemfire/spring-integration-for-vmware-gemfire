@@ -1,10 +1,13 @@
 /*
- * Copyright 2024-2026 Broadcom. All rights reserved.
+ * Copyright $originalComment.match("Copyright \(c\) VMware, Inc. (\d+)", 1, "-", $today.year)$originalComment.match("Copyright (\d+)", 1, "-", $today.year)2026 Broadcom. All rights reserved.
  * SPDX-License-Identifier: Apache-2.0
  */
 
 pluginManagement {
   repositories {
+    if (providers.gradleProperty("useMavenLocal").getOrElse("false").toBoolean()) {
+      mavenLocal()
+    }
     val repositoryConfigFilePath = providers.gradleProperty("spring.gemfire.repositories").getOrElse(
       providers.environmentVariable("HOME").get() + "/.gradle/gradleRepositories.json"
     )

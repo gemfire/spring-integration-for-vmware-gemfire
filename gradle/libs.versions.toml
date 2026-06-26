@@ -1,17 +1,16 @@
 [versions]
 assertJCore = "3.27.7"
-benManesVersions = "0.54.0"
 commonsIO = "2.22.0"
 gemfireTestcontainers = "3.0.0"
-gemfireVersion = "10.3.0"
+gemfireVersion = "10.2.5"
 junitBom = "6.1.0"
 littlerobotsVersionCatalogUpdate = "1.1.0"
 log4jOverSlf4j = "2.0.18"
-logback = "1.5.32"
-mockito = { require = "5.14.2" }
-springDataGemFireVersion = "2.0.0"
-springIntegrationVersion = "7.1.0-RC1"
-springTest = "7.0.7.1"
+logback = "1.5.36"
+mockito = "5.14.2"
+springDataGemFireVersion = "2.0.+"
+springIntegrationVersion = "7.1.0"
+springTest = "7.0.8"
 
 [libraries]
 assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertJCore" }
@@ -23,10 +22,9 @@ junit-bom = { module = "org.junit:junit-bom", version.ref = "junitBom" }
 log4j-over-slf4j = { module = "org.slf4j:log4j-over-slf4j", version.ref = "log4jOverSlf4j" }
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
-spring-data-gemfire = { module = "com.vmware.gemfire:spring-data-4.0-gemfire-10.3", version.ref = "springDataGemFireVersion" }
+spring-data-gemfire = { module = "com.vmware.gemfire:spring-data-4.1-gemfire-10.2", version.ref = "springDataGemFireVersion" }
 spring-integration-bom = { module = "org.springframework.integration:spring-integration-bom", version.ref = "springIntegrationVersion" }
 spring-test = { module = "org.springframework:spring-test", version.ref = "springTest" }
 
 [plugins]
-ben-manes-versions = { id = "com.github.ben-manes.versions", version.ref = "benManesVersions" }
 littlerobots-version-catalog-update = { id = "nl.littlerobots.version-catalog-update", version.ref = "littlerobotsVersionCatalogUpdate" }
