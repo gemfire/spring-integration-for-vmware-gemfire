@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Broadcom. All rights reserved.
+ * Copyright $originalComment.match("Copyright \(c\) VMware, Inc. (\d+)", 1, "-", $today.year)$originalComment.match("Copyright (\d+)", 1, "-", $today.year)2026 Broadcom. All rights reserved.
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -33,7 +33,7 @@ class ArtifactoryPlugin implements Plugin<Project> {
         // clientConfig.setIncludeEnvVars(true)
 
         def buildInfo = clientConfig.info
-        buildInfo.setBuildName(project.name + "-" + project.version)
+        buildInfo.setBuildName("spring-integration-6.5-gemfire-10.2-1.0.x")
         buildInfo.setBuildNumber(project.properties.getOrDefault("buildId", '0000') as String)
         buildInfo.setProject("tds-gemfire")
         buildInfo.setAgentName(System.properties['user.name'] as String)
