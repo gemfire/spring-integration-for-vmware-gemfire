@@ -1,4 +1,9 @@
 /*
+ * Copyright 2026 Broadcom. All rights reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/*
  * Copyright $originalComment.match("Copyright \(c\) VMware, Inc. (\d+)", 1, "-", $today.year)$originalComment.match("Copyright (\d+)", 1, "-", $today.year)2026 Broadcom. All rights reserved.
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -14,6 +19,8 @@ import com.google.cloud.storage.BlobId
 import com.google.cloud.storage.BlobInfo
 import com.google.cloud.storage.StorageOptions
 import java.io.FileInputStream
+import java.net.HttpURLConnection
+import java.net.URI
 
 buildscript {
   repositories {
@@ -165,15 +172,51 @@ versionCatalogUpdate {
   keep {
     keepUnusedVersions = true
   }
+  // vCU v1.x resolves catalog entries directly via its own detached configurations,
+  // independently of DependencyUpdatesTask. Without this selector the isAllowedUpdate
+  // gating below is bypassed for that second resolution path (e.g. GemFire compileOnly
+  // deps that only appear in subprojects). Mirror the same logic here so both paths apply
+  // isAllowedUpdate consistently.
   versionSelector {
     val allowMajor = project.hasProperty("updateMajor")
     val allowMinor = project.hasProperty("updateMinor")
-    isAllowedUpdate(it.candidate.version, it.currentVersion, allowMajor, allowMinor)
+    val candidate = it.candidate
+    if (!isAllowedUpdate(candidate.version, it.currentVersion, allowMajor, allowMinor)) {
+      false
+    } else if (candidate.group == "com.vmware.gemfire") {
+      // com.vmware.gemfire artifacts are expected to come from our commercial repos;
+      // no public-availability check applies to them.
+      true
+    } else {
+      // Our internal repos mirror/aggregate several other Broadcom-internal repos
+      // (e.g. commercially patched Spring builds) alongside com.vmware.gemfire
+      // artifacts, so version listings for non-gemfire groups can include
+      // commercial-only versions that don't exist publicly. Since every non-gemfire
+      // library we track here is meant to stay on publicly available versions, reject
+      // any candidate that doesn't actually resolve from Maven Central.
+      isPubliclyAvailable(candidate.group, candidate.module, candidate.version)
+    }
   }
   versionCatalogs {
     create("publishCatalog") {
       catalogFile = file("gradle/publishing.versions.toml")
     }
+  }
+}
+
+fun isPubliclyAvailable(group: String, module: String, version: String): Boolean {
+  val path = group.replace(".", "/")
+  val url = "https://repo.maven.apache.org/maven2/$path/$module/$version/$module-$version.pom"
+  return try {
+    val connection = URI(url).toURL().openConnection() as HttpURLConnection
+    connection.requestMethod = "HEAD"
+    connection.connectTimeout = 5000
+    connection.readTimeout = 5000
+    val code = connection.responseCode
+    connection.disconnect()
+    code == 200
+  } catch (e: java.io.IOException) {
+    false
   }
 }
 
